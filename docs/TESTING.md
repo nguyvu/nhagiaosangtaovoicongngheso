@@ -29,12 +29,16 @@ Gói scene khoảng 948 kB (256 kB gzip), được lazy load riêng. Đây là c
 
 ## Chạy lại
 
+Kiểm tra cấu hình GitHub Pages ngày 12/10/2026: `npm run check` đạt (9/9 tests); Chrome headless chạy bản build tại `/nhagiaosangtaovoicongngheso/` đạt toàn bộ kịch bản desktop/mobile, công thức, camera, bài tập và tải lại trang, không ghi nhận lỗi JavaScript. Cảnh báo chunk 3D lớn hơn 500 kB vẫn còn.
+
 ```bash
 npm run check
 npm run test:browser
 ```
 
 `test:browser` dùng Chrome cài sẵn tại đường dẫn mặc định trên macOS. Với hệ điều hành khác, đặt biến `QA_CHROME_PATH` thành đường dẫn executable Chrome/Chromium. Cần trống cổng 5183 và 9233 và cho phép tiến trình mở localhost/chạy Chrome headless. Script tự chạy/dừng Vite và Chrome, xóa profile tạm, ghi lại ảnh vào `docs/screenshots/`.
+
+Script lấy đường dẫn mặc định từ `base` của Vite. Để kiểm tra bản build sau `npm run check`, chạy `QA_PREVIEW=1 npm run test:browser`. Để kiểm tra website đã triển khai, chạy `QA_BASE_URL=https://nguyvu.github.io/nhagiaosangtaovoicongngheso/ npm run test:browser`; chế độ này chỉ chạy Chrome, không mở Vite. Có thể đặt `QA_SCREENSHOT_DIR` thành thư mục tạm để không thay ảnh tài liệu.
 
 Script dùng Chrome DevTools Protocol qua WebSocket của Node, không cần tải browser hoặc thêm thư viện kiểm thử. Nếu kiểm thử dừng giữa chừng do ngắt tiến trình, kiểm tra các cổng trước khi chạy lại. Không dùng script này trong máy chủ production.
 

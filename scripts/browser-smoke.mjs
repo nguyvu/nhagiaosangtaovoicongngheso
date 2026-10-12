@@ -5,8 +5,11 @@ import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import viteConfig from '../vite.config.js';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
+const pageUrl = process.env.QA_BASE_URL || `http://127.0.0.1:5183${viteConfig.base}`;
+const screenshotDir = process.env.QA_SCREENSHOT_DIR || join(root, 'docs/screenshots');
 const chromePath = process.env.QA_CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const profile = await mkdtemp(join(tmpdir(), 'geometry-chrome-'));
 const processes = [];
@@ -33,8 +36,11 @@ async function waitFor(fn, label, timeout = 15000) {
   throw new Error(`Timeout: ${label}\n${output.slice(-3000)}`);
 }
 try {
-  launch(process.execPath, ['node_modules/vite/bin/vite.js', '--host', '127.0.0.1', '--port', '5183', '--strictPort']);
-  await waitFor(async () => (await fetch('http://127.0.0.1:5183/')).ok, 'Vite');
+  if (!process.env.QA_BASE_URL) {
+    const mode = process.env.QA_PREVIEW === '1' ? ['preview'] : [];
+    launch(process.execPath, ['node_modules/vite/bin/vite.js', ...mode, '--host', '127.0.0.1', '--port', '5183', '--strictPort']);
+  }
+  await waitFor(async () => (await fetch(pageUrl)).ok, 'Website');
   launch(chromePath, ['--headless=new', '--no-first-run', '--no-default-browser-check', `--user-data-dir=${profile}`, '--remote-debugging-port=9233', '--enable-unsafe-swiftshader', 'about:blank']);
   const pages = await waitFor(async () => {
     const list = await (await fetch('http://127.0.0.1:9233/json/list')).json();
@@ -102,8 +108,8 @@ try {
   }
   async function screenshot(name) {
     const result = await cdp('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
-    await mkdir(join(root, 'docs/screenshots'), { recursive: true });
-    await writeFile(join(root, 'docs/screenshots', name), Buffer.from(result.data, 'base64'));
+    await mkdir(screenshotDir, { recursive: true });
+    await writeFile(join(screenshotDir, name), Buffer.from(result.data, 'base64'));
   }
   async function sceneImage() {
     const clip = await evaluate(`(() => {
@@ -115,7 +121,7 @@ try {
   await cdp('Runtime.enable');
   await cdp('Page.enable');
   await cdp('Emulation.setDeviceMetricsOverride', { width: 1365, height: 1100, deviceScaleFactor: 1, mobile: false });
-  await cdp('Page.navigate', { url: 'http://127.0.0.1:5183/' });
+  await cdp('Page.navigate', { url: pageUrl });
   await waitFor(() => evaluate(`!!document.querySelector('canvas') && document.querySelector('canvas').width > 0`), 'Canvas', 30000);
   await delay(1200);
   assert.equal(await evaluate(`document.querySelectorAll('[aria-expanded="true"]').length`), 0);
@@ -187,8 +193,11 @@ try {
   await delay(200);
   assert.ok(await evaluate(`document.documentElement.scrollWidth <= window.innerWidth`), '360px must not overflow');
   checks.push('Mobile 390/360 px: no horizontal overflow; stacked panels');
+  await cdp('Page.reload', { ignoreCache: true });
+  await waitFor(() => evaluate(`!!document.querySelector('canvas') && document.querySelector('canvas').width > 0 && document.querySelectorAll('[aria-expanded="true"]').length === 0`), 'Reloaded Canvas', 30000);
+  checks.push('Reload: Canvas rendered and topics reset');
   assert.deepEqual(runtimeErrors, [], 'No browser runtime errors');
-  console.log(JSON.stringify({ checks, runtimeErrors, screenshots: 'docs/screenshots/' }, null, 2));
+  console.log(JSON.stringify({ url: pageUrl, checks, runtimeErrors, screenshots: screenshotDir }, null, 2));
 } finally {
   socket?.close();
   for (const child of processes.reverse()) child.kill('SIGTERM');
