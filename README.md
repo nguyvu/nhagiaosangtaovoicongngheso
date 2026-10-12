@@ -81,6 +81,8 @@ docs/                      Phạm vi, kiến trúc và checklist kiểm thử
 
 Website GitHub Pages: [Nhà kiến tạo hình học](https://nguyvu.github.io/nhagiaosangtaovoicongngheso/).
 
+Xem [hướng dẫn triển khai và cập nhật website](docs/DEPLOYMENT.md) để sửa code rồi deploy lại, chạy triển khai thủ công, đổi `base`, xử lý lỗi và hoàn tác bản cập nhật.
+
 Workflow `.github/workflows/deploy.yml` tự triển khai mỗi lần push lên `feature/HHCN_HLP`, hoặc chạy thủ công từ tab Actions trên nhánh này. GitHub dùng Node.js 22, chạy `npm ci` và `npm run check`; chỉ đưa `dist/` lên Pages khi lint, test và build đều đạt. Trong Settings → Pages, chọn nguồn **GitHub Actions**.
 
 Để cập nhật website: sửa mã nguồn, chạy `npm run check`, kiểm tra giao diện, commit rồi push lên `feature/HHCN_HLP`. Theo dõi workflow **Deploy GitHub Pages** trong tab Actions. Không commit `dist/` hoặc `node_modules/`. Nếu kiểm tra/build lỗi, bước deploy không chạy và bản đang phục vụ được giữ nguyên.
