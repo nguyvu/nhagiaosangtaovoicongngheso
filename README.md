@@ -79,6 +79,6 @@ docs/                      Phạm vi, kiến trúc và checklist kiểm thử
 
 ## Git và giới hạn
 
-Dự án có repository Git cục bộ riêng tại `/Users/nguyenvu/nha-kien-tao-hinh-hoc`, độc lập với repository bài học React. Repository GitHub: [nguyvu/nguyvu](https://github.com/nguyvu/nguyvu), nhánh phát triển `feature/HHCN_HLP`. `.gitignore` loại bỏ dependencies, build, file môi trường và dữ liệu nhạy cảm thông thường.
+Dự án có repository Git cục bộ riêng tại `/Users/nguyenvu/nha-kien-tao-hinh-hoc`, độc lập với repository bài học React. Repository GitHub: [nguyvu/nhagiaosangtaovoicongngheso](https://github.com/nguyvu/nhagiaosangtaovoicongngheso), nhánh phát triển `feature/HHCN_HLP`. `.gitignore` loại bỏ dependencies, build, file môi trường và dữ liệu nhạy cảm thông thường.
 
 Đây là bản mẫu, chưa có lưu tiến độ hay chế độ offline/PWA. WebGL cần được trình duyệt và thiết bị hỗ trợ. Mô hình dùng khe nhỏ giữa khối đơn vị để nhìn rõ, không làm thay đổi thể tích toán học. Xem giới hạn xác minh trong `docs/TESTING.md`. Nội dung kiến thức cần giáo viên rà soát trước khi dùng trong lớp.
