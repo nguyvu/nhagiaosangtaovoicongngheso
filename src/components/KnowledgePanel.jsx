@@ -18,7 +18,7 @@ export default function KnowledgePanel({ shape, topic, feature, setFeature, area
     substitution = cube ? `${lateral ? 4 : 6} × ${d} × ${d}` : lateral ? `2 × (${d} + ${r}) × ${h}` : `2 × (${d} × ${r} + ${d} × ${h} + ${r} × ${h})`;
   }
   return <div id="knowledge-content" className="knowledge-content">
-    {!topic && <div className="empty-panel"><span aria-hidden="true">✦</span><h3>Mỗi góc nhìn, một khám phá!</h3><p>Chọn một mục ở trên để tìm hiểu hình. Em có thể bấm lần nữa để đóng nội dung.</p></div>}
+    {!topic && <div className="empty-panel"><h3>Mỗi góc nhìn, một khám phá!</h3><p>Chọn một mục ở trên để tìm hiểu hình. Em có thể bấm lần nữa để đóng nội dung.</p></div>}
     {topic === 'features' && <>
       <ChoiceButtons options={[[ 'vertices', 'Xem đỉnh' ], [ 'edges', 'Xem cạnh' ], [ 'faces', 'Xem mặt' ]]} value={feature} onChange={setFeature} />
       <div className="fact-number">{SOLID_COUNTS[feature]} <span>{feature === 'vertices' ? 'đỉnh' : feature === 'edges' ? 'cạnh' : 'mặt'}</span></div>

@@ -106,6 +106,49 @@ try {
     })()`);
     await delay(200);
   }
+  async function pressKey(key, code, keyCode) {
+    const params = { key, code, windowsVirtualKeyCode: keyCode, nativeVirtualKeyCode: keyCode };
+    const text = key === 'Enter' ? '\r' : key === ' ' ? ' ' : '';
+    await cdp('Input.dispatchKeyEvent', { type: 'keyDown', ...params, text, unmodifiedText: text });
+    await cdp('Input.dispatchKeyEvent', { type: 'keyUp', ...params });
+    await delay(200);
+  }
+  async function checkLayout(label, stacked = false) {
+    const result = await evaluate(`(() => {
+      const visible = element => element.getClientRects().length && getComputedStyle(element).visibility !== 'hidden';
+      const describe = element => element.textContent.trim().slice(0, 70);
+      const containers = [...document.querySelectorAll('.viewer-card, .explore-card, .knowledge-content, .formula, .exercise-panel, .choice-buttons, .view-controls')];
+      const overflow = containers.filter(visible).filter(element => element.scrollWidth > element.clientWidth + 1).map(element => element.className);
+      const text = [...document.querySelectorAll('.intro p, .shape-card strong, .viewer-hint, .panel-intro, .empty-panel p, .knowledge-content p, .knowledge-content h3, .knowledge-content label, .formula strong, .formula span, .dimension-row > span, .exercise-panel input, .solution strong, button')];
+      const smallText = text.filter(visible).filter(element => parseFloat(getComputedStyle(element).fontSize) < 18).map(describe);
+      const smallButtons = [...document.querySelectorAll('button')].filter(visible).filter(element => {
+        const rect = element.getBoundingClientRect();
+        return rect.width < 44 || rect.height < 44;
+      }).map(describe);
+      const missingCameraLabels = [...document.querySelectorAll('.view-controls button')].filter(button => {
+        const range = document.createRange();
+        const walker = document.createTreeWalker(button, NodeFilter.SHOW_TEXT);
+        while (walker.nextNode()) {
+          const node = walker.currentNode;
+          if (!/[a-zA-ZÀ-ỹ]/.test(node.textContent) || node.parentElement.closest('[aria-hidden="true"]')) continue;
+          range.selectNodeContents(node);
+          if ([...range.getClientRects()].some(rect => rect.width > 0 && rect.height > 0) && getComputedStyle(node.parentElement).visibility !== 'hidden') return false;
+        }
+        return true;
+      }).map(button => button.getAttribute('aria-label') || describe(button));
+      return {
+        pageOverflow: document.documentElement.scrollWidth > window.innerWidth + 1,
+        overflow, smallText, smallButtons, missingCameraLabels,
+        stacked: document.querySelector('.explore-card').getBoundingClientRect().top >= document.querySelector('.viewer-card').getBoundingClientRect().bottom,
+      };
+    })()`);
+    assert.equal(result.pageOverflow, false, `${label}: page must not overflow horizontally`);
+    assert.deepEqual(result.overflow, [], `${label}: content must not be clipped inside cards`);
+    assert.deepEqual(result.smallText, [], `${label}: main text must be at least 18px`);
+    assert.deepEqual(result.smallButtons, [], `${label}: buttons must provide a 44px target`);
+    assert.deepEqual(result.missingCameraLabels, [], `${label}: camera labels must remain visible`);
+    if (stacked) assert.ok(result.stacked, `${label}: learning panels must stack`);
+  }
   async function screenshot(name) {
     const result = await cdp('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
     await mkdir(screenshotDir, { recursive: true });
@@ -120,13 +163,24 @@ try {
   }
   await cdp('Runtime.enable');
   await cdp('Page.enable');
-  await cdp('Emulation.setDeviceMetricsOverride', { width: 1365, height: 1100, deviceScaleFactor: 1, mobile: false });
+  await cdp('DOM.enable');
+  await cdp('CSS.enable');
+  await cdp('Emulation.setDeviceMetricsOverride', { width: 1280, height: 1100, deviceScaleFactor: 1, mobile: false });
   await cdp('Page.navigate', { url: pageUrl });
   await waitFor(() => evaluate(`!!document.querySelector('canvas') && document.querySelector('canvas').width > 0`), 'Canvas', 30000);
+  await evaluate('document.fonts.ready.then(() => true)');
+  const { root: documentRoot } = await cdp('DOM.getDocument');
+  for (const selector of ['.intro h1 em', '.intro p', '.shape-card strong']) {
+    const { nodeId } = await cdp('DOM.querySelector', { nodeId: documentRoot.nodeId, selector });
+    const { fonts } = await cdp('CSS.getPlatformFontsForNode', { nodeId });
+    assert.ok(fonts.length > 0 && fonts.every(font => font.isCustomFont && font.familyName.includes('Nunito')), `${selector}: Latin and Vietnamese text must use the bundled Nunito font without fallback: ${JSON.stringify(fonts)}`);
+  }
+  checks.push('Vietnamese typography: headline, body and shape labels use bundled Nunito for all glyphs');
   await delay(1200);
   assert.equal(await evaluate(`document.querySelectorAll('[aria-expanded="true"]').length`), 0);
+  await checkLayout('Desktop: initial view');
   await screenshot('desktop.png');
-  checks.push('Desktop 1365 px: Canvas rendered; topics initially closed');
+  checks.push('Desktop 1280 px: Canvas rendered; topics initially closed');
   // Compare actual renderer output, not just button events.
   const before = await sceneImage();
   await click('Phóng to');
@@ -183,16 +237,83 @@ try {
   await click('Xem đáp án'); await includes('4 + 4 = 8 đỉnh.');
   await click('Kích thước'); await includes('3 cm');
   checks.push('Exercises: hidden solution, invalid/wrong/right answers, reset, next, shape reset');
-  await cdp('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
-  await delay(250);
-  assert.ok(await evaluate(`document.documentElement.scrollWidth <= window.innerWidth`), 'Mobile must not overflow');
-  assert.ok(await evaluate(`document.querySelector('.explore-card').getBoundingClientRect().top >= document.querySelector('.viewer-card').getBoundingClientRect().bottom`), 'Mobile panels must stack');
-  await evaluate('window.scrollTo(0, 0)');
-  await screenshot('mobile.png');
-  await cdp('Emulation.setDeviceMetricsOverride', { width: 360, height: 800, deviceScaleFactor: 1, mobile: true });
-  await delay(200);
-  assert.ok(await evaluate(`document.documentElement.scrollWidth <= window.innerWidth`), '360px must not overflow');
-  checks.push('Mobile 390/360 px: no horizontal overflow; stacked panels');
+  // Real keyboard events verify native button and range behavior, including focus.
+  await click('Kích thước');
+  await evaluate(`document.querySelector('.topic-list button').focus()`);
+  await pressKey('Tab', 'Tab', 9);
+  assert.ok(await evaluate(`document.activeElement.textContent.includes('Kích thước')`), 'Tab must move to the next topic');
+  assert.ok(await evaluate(`document.activeElement.matches(':focus-visible') && parseFloat(getComputedStyle(document.activeElement).outlineWidth) >= 2`), 'Keyboard focus must be visible');
+  await pressKey('Enter', 'Enter', 13);
+  assert.equal(await evaluate(`document.activeElement.getAttribute('aria-expanded')`), 'true');
+  await evaluate(`document.querySelector('input[type="range"]').focus()`);
+  await pressKey('ArrowRight', 'ArrowRight', 39);
+  assert.equal(await evaluate(`document.querySelector('input[type="range"]').value`), '4');
+  await includes('4 cm');
+  await evaluate(`document.querySelector('.topic-list [aria-expanded="true"]').focus()`);
+  await pressKey(' ', 'Space', 32);
+  assert.equal(await evaluate(`document.querySelectorAll('[aria-expanded="true"]').length`), 0);
+  checks.push('Keyboard: Tab and visible focus; Enter/Space open and close topics; ArrowRight changes dimensions');
+  for (const [width, height] of [[1280, 1100], [1024, 900], [768, 1024], [390, 844], [360, 800]]) {
+    await cdp('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: width <= 390 });
+    await delay(250);
+    // Reset both shape state and exercise progress for each viewport.
+    await click('Hình lập phương');
+    await click('Hình hộp chữ nhật');
+    await checkLayout(`${width}px: initial view`, width <= 1040);
+    await evaluate('window.scrollTo(0, 0)');
+    if (width === 390) await screenshot('mobile.png');
+    if (width === 768) {
+      await evaluate(`document.querySelector('.viewer-card').scrollIntoView({ block: 'start' })`);
+      await screenshot('tablet.png');
+    }
+    await click('Đỉnh, cạnh và mặt');
+    await click('Xem mặt');
+    await checkLayout(`${width}px: features`);
+    await click('Kích thước');
+    await checkLayout(`${width}px: dimensions`);
+    if (width === 360) {
+      await evaluate(`document.querySelector('.scene').scrollIntoView({ block: 'center' })`);
+      await screenshot('mobile-dimensions.png');
+      const clippedLabels = await evaluate(`(() => {
+        const scene = document.querySelector('.scene').getBoundingClientRect();
+        return [...document.querySelectorAll('.dimension-label')].flatMap(label => {
+          const rect = label.getBoundingClientRect();
+          if (rect.left >= scene.left && rect.right <= scene.right && rect.top >= scene.top && rect.bottom <= scene.bottom) return [];
+          return [{ text: label.textContent, left: rect.left - scene.left, right: rect.right - scene.left, top: rect.top - scene.top, bottom: rect.bottom - scene.top, sceneWidth: scene.width, sceneHeight: scene.height }];
+        });
+      })()`);
+      assert.deepEqual(clippedLabels, [], '360px: dimension labels must fit inside the scene at the initial camera angle');
+      await click('Xoay sang trái');
+      await screenshot('mobile-dimensions-rotated.png');
+      await click('Phóng to');
+      await screenshot('mobile-dimensions-zoomed.png');
+      await click('Góc nhìn ban đầu');
+    }
+    await click('Diện tích');
+    await click('Toàn phần');
+    await includes('62 cm²');
+    await checkLayout(`${width}px: cuboid total area`);
+    if (width === 1280 || width === 390) {
+      await evaluate(`document.querySelector('.knowledge-content').scrollIntoView({ block: 'center' })`);
+      await screenshot(width === 1280 ? 'desktop-panel.png' : 'mobile-panel.png');
+    }
+    await click('Thể tích');
+    await checkLayout(`${width}px: volume`);
+    await click('Bài tập');
+    await click('Bài tiếp theo');
+    await click('Bài tiếp theo');
+    await answer('0');
+    await click('Kiểm tra đáp án');
+    await includes('Chưa đúng');
+    await checkLayout(`${width}px: exercise feedback`);
+    await click('Xem đáp án');
+    await checkLayout(`${width}px: exercise solution`);
+    if (width === 390) {
+      await evaluate(`document.querySelector('.exercise-panel').scrollIntoView({ block: 'center' })`);
+      await screenshot('mobile-exercise.png');
+    }
+  }
+  checks.push('Desktop 1280, tablet 1024/768, mobile 390/360 px: all topics, long formula and exercise states fit without clipping; main text ≥18px, buttons ≥44px, visible camera labels');
   await cdp('Page.reload', { ignoreCache: true });
   await waitFor(() => evaluate(`!!document.querySelector('canvas') && document.querySelector('canvas').width > 0 && document.querySelectorAll('[aria-expanded="true"]').length === 0`), 'Reloaded Canvas', 30000);
   checks.push('Reload: Canvas rendered and topics reset');

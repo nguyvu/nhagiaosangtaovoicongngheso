@@ -41,7 +41,7 @@ function CameraControls({ command, dimensions }) {
 
 export default function GeometryScene({ shape, dimensions, mode, showDimensions, showUnits, command }) {
   const Model = shape === 'cube' ? CubeModel : CuboidModel;
-  return <Canvas frameloop="demand" dpr={[1, 1.75]} camera={{ position: INITIAL_POSITION, fov: 38 }}
+  return <Canvas frameloop="demand" dpr={[1, 1.75]} camera={{ position: INITIAL_POSITION, fov: 38 }} style={{ overflow: 'visible' }}
     fallback={<p className="scene-fallback">Trình duyệt chưa hỗ trợ WebGL. Em vẫn có thể xem kiến thức và làm bài tập.</p>}>
     <ambientLight intensity={1.6} />
     <directionalLight position={[8, 12, 10]} intensity={2.4} />

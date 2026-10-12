@@ -1,8 +1,26 @@
 # Kiểm thử bản mẫu
 
-Ngày kiểm tra: 10/10/2026. Môi trường thực tế: macOS, Node 25.9.0, npm 11.12.1, Chrome headless. Chrome dùng profile tạm, không dùng profile cá nhân.
+Môi trường kiểm tra: macOS, Node 25.9.0, npm 11.12.1, Chrome headless. Chrome dùng profile tạm, không dùng profile cá nhân.
 
-## Kết quả thực tế
+## Giao diện pastel 1.1 — 12/10/2026
+
+Nhánh `feature/HHCN_HLPver1.1` được kiểm tra bằng `npm run check` và `QA_PREVIEW=1 npm run test:browser` trên bản build cục bộ. Kết quả này áp dụng cho bản giao diện mới, chưa phải bản đã triển khai trên GitHub Pages.
+
+| Kiểm tra | Kết quả |
+| --- | --- |
+| Lint, kiểm thử logic, build | Đạt; 9/9 kiểm thử logic, còn cảnh báo chunk 3D lớn hơn 500 kB |
+| Desktop 1280 px; tablet 768/1024 px; mobile giả lập 360/390 px | Mở toàn bộ chủ đề, công thức dài và lời giải; không tràn ngang trang hoặc bị cắt trong khối nội dung |
+| Chữ và nút | Nội dung học tập/nhãn nút tối thiểu 18 px; vùng bấm ít nhất 44 px; nút xoay/zoom luôn có nhãn chữ |
+| Bàn phím | Tab chuyển focus có viền rõ; Enter/Space mở và đóng chủ đề; ArrowRight thay đổi thanh trượt |
+| Nhãn kích thước | Ba nhãn hộp chữ nhật nằm trọn khung ở 360 px tại góc mặc định; đã chụp thêm góc xoay và phóng to |
+| Chức năng hiện có | Công thức, camera, đổi hình/reset, giới hạn khối đơn vị và luồng bài tập đều đạt |
+| Lỗi JavaScript | Không ghi nhận trong kịch bản kiểm tra |
+
+Các cặp màu chính đã tính tương phản: chữ `#333333`/nền `#FFF0F5` là 11,45:1; chữ trắng/nút `#a42b59` là 6,84:1; chữ `#a42b59`/nền đang chọn `#fce3ed` là 5,65:1. Đây là kiểm tra các cặp màu thiết kế, không thay thế rà soát toàn bộ khả năng tiếp cận bằng thiết bị thật.
+
+Ảnh bản 1.1: [Desktop](screenshots/desktop.png), [Công thức desktop](screenshots/desktop-panel.png), [Tablet](screenshots/tablet.png), [Mobile](screenshots/mobile.png), [Công thức mobile](screenshots/mobile-panel.png), [Bài tập mobile](screenshots/mobile-exercise.png), [Nhãn kích thước 360 px](screenshots/mobile-dimensions.png), [Sau xoay](screenshots/mobile-dimensions-rotated.png), [Sau xoay và phóng to](screenshots/mobile-dimensions-zoomed.png).
+
+## Kết quả bản mẫu 0.1 — 10/10/2026
 
 | Kiểm tra | Kết quả |
 | --- | --- |
@@ -23,7 +41,7 @@ Ngày kiểm tra: 10/10/2026. Môi trường thực tế: macOS, Node 25.9.0, np
 | Mobile giả lập 390 px và 360 px | Không tràn ngang; panel nằm dưới mô hình |
 | Lỗi JavaScript/console.error | Không ghi nhận trong kịch bản Chrome |
 
-Ảnh đã chụp và xem lại: [Desktop](screenshots/desktop.png), [Mobile](screenshots/mobile.png).
+Ảnh trong `docs/screenshots/` được cập nhật theo lần kiểm tra giao diện mới nhất ở trên.
 
 Gói scene khoảng 948 kB (256 kB gzip), được lazy load riêng. Đây là cảnh báo dung lượng, không phải lỗi build. Chưa đo tốc độ trên thiết bị trường học hoặc mạng chậm.
 

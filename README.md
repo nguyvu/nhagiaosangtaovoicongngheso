@@ -35,7 +35,15 @@ Không cần file môi trường, tài khoản, backend hoặc cơ sở dữ li�
 - Công thức, thay số và đơn vị cm²/cm³ cập nhật theo kích thước.
 - Minh họa tối đa 216 khối đơn vị; vượt giới hạn sẽ hiện hướng dẫn giảm kích thước.
 - 4 bài tập mỗi hình; kiểm tra đáp án, lời giải, bài tiếp theo và làm lại.
-- Giao diện hồng nhạt, responsive, focus bàn phím và phản hồi có chữ.
+- Giao diện hồng pastel `#FFF0F5`, chữ chính `#333333` từ 18 px, nút lớn có biểu tượng và nhãn; hỗ trợ focus bàn phím và phản hồi có chữ.
+
+## Giao diện phiên bản 1.1
+
+Nhánh `feature/HHCN_HLPver1.1` dùng bảng màu hồng thống nhất, khối nội dung trắng/hồng nhạt, góc bo mềm và khoảng cách thoáng. Nội dung học tập và nhãn nút tối thiểu 18 px, dòng chữ giãn 1,65; nhãn phụ dùng 16 px. Nút cao tối thiểu 52 px; nút xoay/zoom luôn hiện chữ trên cả điện thoại. Biểu tượng SVG có sẵn trong mã nguồn, không thêm thư viện.
+
+Tablet và điện thoại (chiều rộng đến 1040 px) xếp mô hình và nội dung học theo chiều dọc. Điện thoại đến 650 px dùng thẻ chọn hình và danh sách chủ đề một cột. Nền mô hình và phần mở đầu được giảm chi tiết trang trí; các màu đánh dấu đỉnh, cạnh và mặt 3D vẫn giữ ý nghĩa học tập. Font Nunito bo tròn có đầy đủ ký tự tiếng Việt được đóng gói trong dự án, không phụ thuộc font cài trên máy và không gọi Google Fonts khi chạy. Xem [font và giấy phép](docs/FONTS.md).
+
+Workflow hiện chỉ triển khai nhánh `feature/HHCN_HLP`; bản giao diện 1.1 cần được đưa vào nhánh đó để xuất hiện trên website công khai.
 
 ## Hướng dẫn thao tác
 

@@ -1,5 +1,6 @@
 import { lazy, Suspense, useState } from 'react';
 import ShapeIcon from './components/ShapeIcon';
+import UiIcon from './components/UiIcon';
 import ShapeSelector from './components/ShapeSelector';
 import ExploreControls from './components/ExploreControls';
 import KnowledgePanel from './components/KnowledgePanel';
@@ -47,10 +48,10 @@ export default function App() {
     <a href="#main" className="skip-link">Đến nội dung chính</a>
     <header className="site-header"><div className="header-inner"><a href="#main" className="brand"><span className="brand-symbol"><ShapeIcon /></span><span>Nhà kiến tạo<span className="brand-second">hình học</span></span></a><span className="grade-badge">TOÁN LỚP 5 <span>·</span> HỌC QUA KHÁM PHÁ</span></div></header>
     <main id="main">
-      <section className="intro"><div><span className="eyebrow">CHÀO MỪNG NHÀ KIẾN TẠO NHÍ</span><h1>Chạm vào hình khối.<br /><em>Mở ra điều thú vị.</em></h1><p>Xoay một chút, thử một chút — cùng khám phá<br className="desktop-break" /> thế giới hình học theo cách của em!</p></div><div className="intro-art" aria-hidden="true"><span className="spark spark-one">✦</span><ShapeIcon /><span className="spark spark-two">✧</span><span className="art-caption">Học bằng cách thử!</span></div></section>
+      <section className="intro"><div><span className="eyebrow">CHÀO MỪNG NHÀ KIẾN TẠO NHÍ</span><h1>Chạm vào hình khối.<br /><em>Mở ra điều thú vị.</em></h1><p>Xoay một chút, thử một chút — cùng khám phá<br className="desktop-break" /> thế giới hình học theo cách của em!</p></div><div className="intro-art" aria-hidden="true"><ShapeIcon /><span className="art-caption">Học bằng cách thử!</span></div></section>
       <ShapeSelector shape={shape} onSelect={setShape} />
       <Exploration key={shape} shape={shape} />
-      <div className="discovery-note"><span aria-hidden="true">✧</span><p><strong>Một gợi ý nhỏ:</strong> Hãy thử xoay hình để nhìn mặt phía sau. Em tìm được điều gì mới?</p></div>
+      <div className="discovery-note"><UiIcon name="hint" /><p><strong>Một gợi ý nhỏ:</strong> Hãy thử xoay hình để nhìn mặt phía sau. Em tìm được điều gì mới?</p></div>
     </main>
     <footer><span>Nhà kiến tạo hình học <span aria-hidden="true">✦</span> Mỗi ngày một khám phá</span><span>Bản mẫu giáo dục · Nội dung cần giáo viên rà soát</span></footer>
   </>;
