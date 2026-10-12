@@ -31,6 +31,8 @@ Gói scene khoảng 948 kB (256 kB gzip), được lazy load riêng. Đây là c
 
 Kiểm tra cấu hình GitHub Pages ngày 12/10/2026: `npm run check` đạt (9/9 tests); Chrome headless chạy bản build tại `/nhagiaosangtaovoicongngheso/` đạt toàn bộ kịch bản desktop/mobile, công thức, camera, bài tập và tải lại trang, không ghi nhận lỗi JavaScript. Cảnh báo chunk 3D lớn hơn 500 kB vẫn còn.
 
+Sau triển khai, cùng kịch bản Chrome headless đã chạy trực tiếp trên [website công khai](https://nguyvu.github.io/nhagiaosangtaovoicongngheso/) và đạt toàn bộ kiểm tra, không ghi nhận lỗi JavaScript. [Workflow triển khai đầu tiên](https://github.com/nguyvu/nhagiaosangtaovoicongngheso/actions/runs/38265101424) hoàn tất thành công cả build và deploy; GitHub Pages bật HTTPS. Mobile là giả lập 390/360 px, chưa kiểm tra bằng điện thoại thật.
+
 ```bash
 npm run check
 npm run test:browser
