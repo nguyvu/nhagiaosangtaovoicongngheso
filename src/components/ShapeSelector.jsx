@@ -5,7 +5,7 @@ export default function ShapeSelector({ shape, onSelect }) {
   return <section aria-labelledby="shape-heading" className="shape-section">
     <div className="section-heading"><span className="step">01</span><h2 id="shape-heading">Chọn hình em muốn khám phá</h2></div>
     <div className="shape-options">{Object.entries(shapeLessons).map(([id, lesson]) =>
-      <button key={id} className={`shape-card ${shape === id ? 'selected' : ''}`} aria-pressed={shape === id} onClick={() => onSelect(id)}>
+      <button key={id} data-tone={id === 'cube' ? 'yellow' : 'green'} className={`shape-card ${shape === id ? 'selected' : ''}`} aria-pressed={shape === id} onClick={() => onSelect(id)}>
         <ShapeIcon wide={id === 'cuboid'} /><span><strong>{lesson.name}</strong><small>{lesson.description}</small></span>
         <span className="selection-mark" aria-hidden="true">{shape === id ? '✓' : '+'}</span>
       </button>)}</div>

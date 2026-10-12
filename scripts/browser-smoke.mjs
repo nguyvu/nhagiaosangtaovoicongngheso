@@ -176,6 +176,21 @@ try {
     assert.ok(fonts.length > 0 && fonts.every(font => font.isCustomFont && font.familyName.includes('Nunito')), `${selector}: Latin and Vietnamese text must use the bundled Nunito font without fallback: ${JSON.stringify(fonts)}`);
   }
   checks.push('Vietnamese typography: headline, body and shape labels use bundled Nunito for all glyphs');
+  const greeting = await evaluate(`Array.from(document.querySelectorAll('.student-wave'), element => {
+    const style = getComputedStyle(element);
+    return { name: style.animationName, duration: parseFloat(style.animationDuration), count: style.animationIterationCount };
+  })`);
+  assert.equal(greeting.length, 2, 'Both students have a greeting animation');
+  assert.ok(greeting.every(item => item.name !== 'none' && item.duration === 5 && item.count === 'infinite'), 'Both students must wave every five seconds');
+  await cdp('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+  assert.equal(await evaluate(`Array.from(document.querySelectorAll('.student-bob, .student-wave')).every(element => getComputedStyle(element).animationName === 'none')`), true, 'Reduced motion disables all student animations');
+  await cdp('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }] });
+  await delay(5200);
+  assert.equal(await evaluate(`Array.from(document.querySelectorAll('.student-wave')).every(element => {
+    const animation = element.getAnimations()[0];
+    return animation?.playState === 'running' && animation.currentTime >= 5000;
+  })`), true, 'Both students must still wave after the first five-second cycle');
+  checks.push('Both students wave again every five seconds; reduced motion disables the animation');
   await delay(1200);
   assert.equal(await evaluate(`document.querySelectorAll('[aria-expanded="true"]').length`), 0);
   await checkLayout('Desktop: initial view');
@@ -201,8 +216,43 @@ try {
   await click('Thể tích'); await includes('1000 cm³');
   assert.equal(await evaluate(`document.querySelector('input[type="checkbox"]').disabled`), true);
   checks.push('Cube formulas, dimension update, 27 unit cubes and upper limit');
+  await click('Kích thước'); await range(3);
+  await click('Tách 6 mặt');
+  assert.equal(await evaluate(`!!document.querySelector('.shape-net')`), false, 'Opening the lesson must keep the cube assembled');
+  await click('Trải thành 6 hình vuông'); await delay(700);
+  assert.equal(await evaluate(`document.querySelectorAll('.shape-net .net-face').length`), 6, 'Cube net must contain six separate square faces');
+  assert.equal(await evaluate(`getComputedStyle(document.querySelector('.scene canvas')).visibility`), 'hidden', '3D cube must give way to the net');
+  await includes('9 cm²'); await includes('54 cm²');
+  await cdp('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+  assert.equal(await evaluate(`Array.from(document.querySelectorAll('.net-face')).every(element => getComputedStyle(element).animationName === 'none')`), true, 'Reduced motion disables the unfolding animation');
+  await cdp('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }] });
+  await checkLayout('Desktop: unfolded cube');
+  await evaluate(`document.querySelector('.viewer-card').scrollIntoView({ block: 'start' })`);
+  await screenshot('desktop-net.png');
+  await click('Ghép lại thành khối');
+  assert.equal(await evaluate(`!!document.querySelector('.shape-net')`), false, 'Fold button restores 3D cube');
+  await click('Tách 6 mặt');
+  assert.equal(await evaluate(`document.querySelectorAll('[aria-expanded="true"]').length`), 0, 'Selecting the active lesson closes it');
+  await click('Kích thước'); await range(5);
+  await click('Tách 6 mặt'); await click('Trải thành 6 hình vuông');
+  await includes('25 cm²'); await includes('150 cm²');
+  checks.push('Cube: unfold six equal faces, recalculate area for changed side, fold back and close topic; reduced motion disables unfolding');
   await click('Hình hộp chữ nhật');
   assert.equal(await evaluate(`document.querySelectorAll('[aria-expanded="true"]').length`), 0);
+  await click('Tách 6 mặt'); await click('Trải 6 mặt chữ nhật'); await delay(700);
+  assert.deepEqual(await evaluate(`Array.from(document.querySelectorAll('.shape-net rect'), rect => [Number(rect.getAttribute('width')), Number(rect.getAttribute('height'))])`), [[140, 56], [84, 56], [140, 56], [84, 56], [140, 84], [140, 84]], 'Cuboid net must have two d × h, two r × h and two d × r faces');
+  await includes('62 cm²'); await includes('32 cm²');
+  await checkLayout('Desktop: unfolded cuboid');
+  await evaluate(`document.querySelector('.viewer-card').scrollIntoView({ block: 'start' })`);
+  await screenshot('desktop-cuboid-net.png');
+  await click('Ghép lại thành khối');
+  assert.equal(await evaluate(`!!document.querySelector('.shape-net')`), false, 'Fold button restores 3D cuboid');
+  await click('Kích thước'); await range(6, 0); await range(4, 1); await range(3, 2);
+  await click('Tách 6 mặt'); await click('Trải 6 mặt chữ nhật');
+  await includes('18 cm²'); await includes('12 cm²'); await includes('24 cm²'); await includes('108 cm²'); await includes('60 cm²');
+  await click('Hình lập phương'); await click('Hình hộp chữ nhật');
+  assert.equal(await evaluate(`!!document.querySelector('.shape-net')`), false, 'Changing shape resets the cuboid net');
+  checks.push('Cuboid: unfold three correctly sized face pairs, update all areas at 6×4×3, fold and reset on shape change');
   await click('Diện tích'); await includes('32 cm²');
   await click('Toàn phần'); await includes('62 cm²');
   await click('Thể tích'); await includes('30 cm³');
@@ -241,6 +291,8 @@ try {
   await click('Kích thước');
   await evaluate(`document.querySelector('.topic-list button').focus()`);
   await pressKey('Tab', 'Tab', 9);
+  assert.ok(await evaluate(`document.activeElement.textContent.includes('Tách 6 mặt')`), 'Tab must move to the cube net topic');
+  await pressKey('Tab', 'Tab', 9);
   assert.ok(await evaluate(`document.activeElement.textContent.includes('Kích thước')`), 'Tab must move to the next topic');
   assert.ok(await evaluate(`document.activeElement.matches(':focus-visible') && parseFloat(getComputedStyle(document.activeElement).outlineWidth) >= 2`), 'Keyboard focus must be visible');
   await pressKey('Enter', 'Enter', 13);
@@ -258,7 +310,35 @@ try {
     await delay(250);
     // Reset both shape state and exercise progress for each viewport.
     await click('Hình lập phương');
+    if (width === 390) {
+      await click('Tách 6 mặt'); await click('Trải thành 6 hình vuông'); await delay(700);
+      await checkLayout('390px: unfolded cube', true);
+      await evaluate(`document.querySelector('.viewer-card').scrollIntoView({ block: 'start' })`);
+      await screenshot('mobile-net.png');
+    }
     await click('Hình hộp chữ nhật');
+    assert.equal(await evaluate(`!!document.querySelector('.shape-net')`), false, `${width}px: switching shape must close the net`);
+    if (width === 390) {
+      await click('Tách 6 mặt'); await click('Trải 6 mặt chữ nhật'); await delay(700);
+      await checkLayout('390px: unfolded cuboid', true);
+      await evaluate(`document.querySelector('.viewer-card').scrollIntoView({ block: 'start' })`);
+      await screenshot('mobile-cuboid-net.png');
+      await click('Tách 6 mặt');
+    }
+    if (width === 360) {
+      await click('Kích thước'); await range(1, 0); await range(10, 1); await range(10, 2);
+      await click('Tách 6 mặt'); await click('Trải 6 mặt chữ nhật'); await delay(700);
+      await checkLayout('360px: extreme cuboid net', true);
+      await includes('240 cm²'); await includes('220 cm²');
+      assert.equal(await evaluate(`(() => {
+        const scene = document.querySelector('.scene').getBoundingClientRect();
+        return [...document.querySelectorAll('.shape-net rect')].every(face => {
+          const box = face.getBoundingClientRect();
+          return box.left >= scene.left - 1 && box.right <= scene.right + 1 && box.top >= scene.top - 1 && box.bottom <= scene.bottom + 1;
+        });
+      })()`), true, '360px: every face must remain within the scene at 1×10×10 cm');
+      await click('Hình lập phương'); await click('Hình hộp chữ nhật');
+    }
     await checkLayout(`${width}px: initial view`, width <= 1040);
     await evaluate('window.scrollTo(0, 0)');
     if (width === 390) await screenshot('mobile.png');
@@ -313,7 +393,7 @@ try {
       await screenshot('mobile-exercise.png');
     }
   }
-  checks.push('Desktop 1280, tablet 1024/768, mobile 390/360 px: all topics, long formula and exercise states fit without clipping; main text ≥18px, buttons ≥44px, visible camera labels');
+  checks.push('Desktop 1280, tablet 1024/768, mobile 390/360 px: all topics, long formula and exercise states fit without clipping; extreme 1×10×10 cuboid net remains inside 360px scene; main text ≥18px, buttons ≥44px, visible camera labels');
   await cdp('Page.reload', { ignoreCache: true });
   await waitFor(() => evaluate(`!!document.querySelector('canvas') && document.querySelector('canvas').width > 0 && document.querySelectorAll('[aria-expanded="true"]').length === 0`), 'Reloaded Canvas', 30000);
   checks.push('Reload: Canvas rendered and topics reset');
@@ -321,7 +401,12 @@ try {
   console.log(JSON.stringify({ url: pageUrl, checks, runtimeErrors, screenshots: screenshotDir }, null, 2));
 } finally {
   socket?.close();
-  for (const child of processes.reverse()) child.kill('SIGTERM');
+  for (const child of processes.reverse()) {
+    child.kill('SIGTERM');
+    // Chrome subprocesses can inherit these pipes and keep Node alive after the checks finish.
+    child.stdout.destroy();
+    child.stderr.destroy();
+  }
   await delay(400);
   await rm(profile, { recursive: true, force: true });
 }

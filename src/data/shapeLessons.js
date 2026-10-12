@@ -4,6 +4,7 @@ export const shapeLessons = {
 };
 export const topics = [
   { id: 'features', label: 'Đỉnh, cạnh và mặt', icon: '◇' },
+  { id: 'net', label: 'Tách 6 mặt', icon: '▦' },
   { id: 'dimensions', label: 'Kích thước', icon: '↔' },
   { id: 'area', label: 'Diện tích', icon: '▧' },
   { id: 'volume', label: 'Thể tích', icon: '▦' },

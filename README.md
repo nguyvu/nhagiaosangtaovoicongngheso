@@ -30,16 +30,19 @@ Không cần file môi trường, tài khoản, backend hoặc cơ sở dữ li�
 - Chọn một trong hai hình; đổi hình sẽ đặt lại kích thước, góc nhìn, nội dung và bài tập.
 - Xoay bằng kéo chuột/cảm ứng; zoom bằng cuộn/chụm; có nút xoay trái/phải, zoom và đặt lại để dùng bàn phím.
 - Mở/đóng từng nội dung: đỉnh/cạnh/mặt, kích thước, diện tích, thể tích, bài tập.
+- Với cả hai hình, mở “Tách 6 mặt” rồi bấm nút trải mặt để xem hình triển khai; bấm “Ghép lại thành khối” để quay về mô hình 3D. Lập phương có 6 hình vuông diện tích `a × a`; hộp chữ nhật có hai mặt `d × h`, hai mặt `r × h` và hai đáy `d × r`.
 - Kích thước nguyên 1–10 cm, nhãn kích thước chỉ hiện ở mục tương ứng.
 - Làm nổi bật nhóm đỉnh/cạnh/mặt; phân biệt 4 mặt bên và 2 mặt đáy theo trục đứng Y.
 - Công thức, thay số và đơn vị cm²/cm³ cập nhật theo kích thước.
 - Minh họa tối đa 216 khối đơn vị; vượt giới hạn sẽ hiện hướng dẫn giảm kích thước.
 - 4 bài tập mỗi hình; kiểm tra đáp án, lời giải, bài tiếp theo và làm lại.
-- Giao diện hồng pastel `#FFF0F5`, chữ chính `#333333` từ 18 px, nút lớn có biểu tượng và nhãn; hỗ trợ focus bàn phím và phản hồi có chữ.
+- Giao diện nền hồng pastel rất nhạt `#FFF8FB`, ô lựa chọn vàng–xanh lá, chữ chính `#333333` từ 18 px, nút lớn có biểu tượng và nhãn; hỗ trợ focus bàn phím và phản hồi có chữ.
 
 ## Giao diện phiên bản 1.1
 
-Nhánh `feature/HHCN_HLPver1.1` dùng bảng màu hồng thống nhất, khối nội dung trắng/hồng nhạt, góc bo mềm và khoảng cách thoáng. Nội dung học tập và nhãn nút tối thiểu 18 px, dòng chữ giãn 1,65; nhãn phụ dùng 16 px. Nút cao tối thiểu 52 px; nút xoay/zoom luôn hiện chữ trên cả điện thoại. Biểu tượng SVG có sẵn trong mã nguồn, không thêm thư viện.
+Nhánh `feature/HHCN_HLPver1.1` dùng nền hồng pastel nhạt, màu nhấn xanh lá và các ô lựa chọn vàng–xanh. Ô được chọn có nền đậm hơn, viền rõ và dấu chọn hoặc biểu tượng đóng. Khối nội dung trắng, góc bo mềm và khoảng cách thoáng. Nội dung học tập và nhãn nút tối thiểu 18 px, dòng chữ giãn 1,65; nhãn phụ dùng 16 px. Nút cao tối thiểu 52 px; nút xoay/zoom luôn hiện chữ trên cả điện thoại. Biểu tượng SVG có sẵn trong mã nguồn, không thêm thư viện.
+
+Hai nhân vật học sinh SVG ở đầu trang vẫy tay ngắn mỗi 5 giây và nhún nhẹ khi mở trang. Hình minh họa thu gọn trên điện thoại, không nhận focus hoặc được đọc như nội dung học. Khi thiết bị bật giảm chuyển động (`prefers-reduced-motion`), toàn bộ hoạt ảnh này được tắt.
 
 Tablet và điện thoại (chiều rộng đến 1040 px) xếp mô hình và nội dung học theo chiều dọc. Điện thoại đến 650 px dùng thẻ chọn hình và danh sách chủ đề một cột. Nền mô hình và phần mở đầu được giảm chi tiết trang trí; các màu đánh dấu đỉnh, cạnh và mặt 3D vẫn giữ ý nghĩa học tập. Font Nunito bo tròn có đầy đủ ký tự tiếng Việt được đóng gói trong dự án, không phụ thuộc font cài trên máy và không gọi Google Fonts khi chạy. Xem [font và giấy phép](docs/FONTS.md).
 
@@ -47,7 +50,7 @@ Workflow hiện chỉ triển khai nhánh `feature/HHCN_HLP`; bản giao diện 
 
 ## Hướng dẫn thao tác
 
-1. Chọn hình ở hai thẻ đầu trang.
+1. Chọn hình ở hai thẻ đầu trang. Mở “Tách 6 mặt” để xem hình triển khai và diện tích từng cặp mặt.
 2. Kéo hình để quan sát; dùng các nút bên dưới nếu thao tác bằng bàn phím.
 3. Mở “Kích thước” và kéo thanh trượt (hoặc dùng phím mũi tên khi thanh trượt có focus).
 4. Mở “Diện tích” hoặc “Thể tích” để xem kết quả theo hình vừa chỉnh.

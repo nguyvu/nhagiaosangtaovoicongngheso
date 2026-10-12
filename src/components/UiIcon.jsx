@@ -1,5 +1,6 @@
 const icons = {
   features: <><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z" /><path d="m4 7.5 8 4.5 8-4.5M12 12v9" /><circle cx="12" cy="12" r="1.4" fill="currentColor" /></>,
+  net: <><path d="M3 9h18v6H3zM9 3h6v18H9z" /><path d="M9 9h6v6H9z" /></>,
   dimensions: <><rect x="3" y="7" width="18" height="10" rx="2" /><path d="M7 7v5m5-5v3m5-3v5" /></>,
   area: <><rect x="4" y="4" width="16" height="16" rx="2" /><path d="M4 12h16M12 4v16" /><path d="m6.5 9.5 3-3m5 11 3-3" /></>,
   volume: <><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z" /><path d="m4 7.5 8 4.5 8-4.5M12 12v9m-8-9 8 4.5 8-4.5M8 5.25l8 4.5v9m0-13.5-8 4.5v9" /></>,

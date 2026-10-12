@@ -22,8 +22,9 @@
 - Mặc định chọn lập phương, chưa mở kiến thức. Trạng thái chỉ giữ trong lần mở trang.
 - Bài tập cố định, độc lập kích thước; không chấm điểm, lưu tiến độ hoặc thu dữ liệu học sinh.
 - Không thêm dịch vụ AI; AI chỉ hỗ trợ quá trình phát triển.
-- Giao diện 1.1: nền hồng pastel `#FFF0F5`, chữ chính `#333333` từ 18 px, khối nội dung bo góc, nút lớn có nhãn và biểu tượng; tablet/điện thoại xếp nội dung dọc. Giữ nguyên nội dung học và chức năng bản mẫu.
+- Giao diện 1.1: nền hồng pastel rất nhạt `#FFF8FB`, ô lựa chọn vàng–xanh lá, chữ chính `#333333` từ 18 px, khối nội dung bo góc, nút lớn có nhãn và biểu tượng; tablet/điện thoại xếp nội dung dọc. Hai nhân vật học sinh vẫy tay ngắn mỗi 5 giây, đứng yên giữa các lần vẫy; tắt hoạt ảnh khi thiết bị yêu cầu giảm chuyển động. Giữ nguyên nội dung học và chức năng bản mẫu.
 - Theo yêu cầu tách dự án, dùng repository Git cục bộ riêng tại `/Users/nguyenvu/nha-kien-tao-hinh-hoc`, độc lập với bộ bài học React.
+- Cả hai hình có chế độ trải sáu mặt thành hình triển khai và ghép lại. Lập phương có sáu hình vuông bằng nhau; hộp chữ nhật có ba cặp hình chữ nhật kích thước `d × h`, `r × h`, `d × r`. Nội dung cho biết diện tích từng mặt/cặp mặt, bốn mặt bên và cả sáu mặt theo số đo hiện tại.
 
 ## Kiến trúc
 

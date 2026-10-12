@@ -2,7 +2,7 @@
 
 Môi trường kiểm tra: macOS, Node 25.9.0, npm 11.12.1, Chrome headless. Chrome dùng profile tạm, không dùng profile cá nhân.
 
-## Giao diện pastel 1.1 — 12/10/2026
+## Giao diện vàng–xanh 1.1 — 13/10/2026
 
 Nhánh `feature/HHCN_HLPver1.1` được kiểm tra bằng `npm run check` và `QA_PREVIEW=1 npm run test:browser` trên bản build cục bộ. Kết quả này áp dụng cho bản giao diện mới, chưa phải bản đã triển khai trên GitHub Pages.
 
@@ -13,12 +13,14 @@ Nhánh `feature/HHCN_HLPver1.1` được kiểm tra bằng `npm run check` và `
 | Chữ và nút | Nội dung học tập/nhãn nút tối thiểu 18 px; vùng bấm ít nhất 44 px; nút xoay/zoom luôn có nhãn chữ |
 | Bàn phím | Tab chuyển focus có viền rõ; Enter/Space mở và đóng chủ đề; ArrowRight thay đổi thanh trượt |
 | Nhãn kích thước | Ba nhãn hộp chữ nhật nằm trọn khung ở 360 px tại góc mặc định; đã chụp thêm góc xoay và phóng to |
+| Trải mặt hai hình | Lập phương có sáu mặt vuông; hộp chữ nhật có hai mặt `d × h`, hai mặt `r × h`, hai đáy `d × r`; diện tích cập nhật khi đổi số đo. Đã kiểm tra hộp 1×10×10 cm trên màn 360 px. Ghép lại, đóng chủ đề và đổi hình trả về mô hình; Chrome giả lập reduced motion tắt hiệu ứng trải mặt |
 | Chức năng hiện có | Công thức, camera, đổi hình/reset, giới hạn khối đơn vị và luồng bài tập đều đạt |
+| Nhân vật học sinh | Hai nhân vật SVG xuất hiện trên desktop và điện thoại; vẫy tay ngắn mỗi 5 giây và đứng yên giữa các lần vẫy; Chrome giả lập reduced motion xác nhận tắt toàn bộ hoạt ảnh nhân vật |
 | Lỗi JavaScript | Không ghi nhận trong kịch bản kiểm tra |
 
-Các cặp màu chính đã tính tương phản: chữ `#333333`/nền `#FFF0F5` là 11,45:1; chữ trắng/nút `#a42b59` là 6,84:1; chữ `#a42b59`/nền đang chọn `#fce3ed` là 5,65:1. Đây là kiểm tra các cặp màu thiết kế, không thay thế rà soát toàn bộ khả năng tiếp cận bằng thiết bị thật.
+Các cặp màu chính đã tính tương phản: chữ `#333333`/nền hồng `#FFF8FB` là 12,08:1; chữ trắng/nút xanh `#176B47` là 6,50:1; biểu tượng `#76520c`/nền vàng được chọn `#ffe58c` là 5,65:1; biểu tượng `#176B47`/nền xanh được chọn `#c8eba9` là 4,93:1. Đây là kiểm tra các cặp màu thiết kế, không thay thế rà soát toàn bộ khả năng tiếp cận bằng thiết bị thật.
 
-Ảnh bản 1.1: [Desktop](screenshots/desktop.png), [Công thức desktop](screenshots/desktop-panel.png), [Tablet](screenshots/tablet.png), [Mobile](screenshots/mobile.png), [Công thức mobile](screenshots/mobile-panel.png), [Bài tập mobile](screenshots/mobile-exercise.png), [Nhãn kích thước 360 px](screenshots/mobile-dimensions.png), [Sau xoay](screenshots/mobile-dimensions-rotated.png), [Sau xoay và phóng to](screenshots/mobile-dimensions-zoomed.png).
+Ảnh bản 1.1: [Desktop](screenshots/desktop.png), [Trải lập phương](screenshots/desktop-net.png), [Trải hộp chữ nhật](screenshots/desktop-cuboid-net.png), [Công thức desktop](screenshots/desktop-panel.png), [Tablet](screenshots/tablet.png), [Mobile](screenshots/mobile.png), [Trải lập phương mobile](screenshots/mobile-net.png), [Trải hộp chữ nhật mobile](screenshots/mobile-cuboid-net.png), [Công thức mobile](screenshots/mobile-panel.png), [Bài tập mobile](screenshots/mobile-exercise.png), [Nhãn kích thước 360 px](screenshots/mobile-dimensions.png), [Sau xoay](screenshots/mobile-dimensions-rotated.png), [Sau xoay và phóng to](screenshots/mobile-dimensions-zoomed.png).
 
 ## Kết quả bản mẫu 0.1 — 10/10/2026
 

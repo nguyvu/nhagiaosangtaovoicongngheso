@@ -33,13 +33,15 @@ Phục vụ học sinh lớp 5, mỗi lần tập trung một nội dung. Chỉ 
 
 ## Giao diện và khả năng tiếp cận
 
-- Nền chính hồng pastel `#FFF0F5`, chữ chính `#333333`, khối nội dung trắng/hồng rất nhạt. Tái sử dụng biến CSS trong `global.css`, giữ tương phản chữ khi thêm màu mới.
+- Nền chính hồng pastel rất nhạt `#FFF8FB`, chữ chính `#333333`, khối nội dung trắng/xanh rất nhạt. Ô lựa chọn dùng vàng và xanh lá, màu nhấn xanh `#176B47`. Tái sử dụng biến CSS trong `global.css`, giữ tương phản chữ khi thêm màu mới và giữ ý nghĩa màu trên mô hình 3D.
 - Nội dung học tập, hướng dẫn, nhãn nút và input tối thiểu 18 px; nhãn phụ tối thiểu 16 px. Dòng chữ chính giãn 1,65, không giảm cỡ chữ trên điện thoại để ép vừa bố cục.
 - Dùng Nunito được đóng gói trong `public/fonts/` qua font-family `Geometry Nunito`; giữ đủ bộ Latin và tiếng Việt cùng độ đậm, không lấy font qua `local()`. Khi thay font, kiểm tra cả chữ có dấu và giữ giấy phép theo [docs/FONTS.md](docs/FONTS.md).
 - Nút cao tối thiểu 52 px; vùng chạm tối thiểu 44 px. Luôn giữ focus rõ, label cho input, trạng thái `aria-pressed`/`aria-expanded` đúng. Nút xoay/zoom có cả biểu tượng và nhãn chữ nhìn thấy.
 - Không chỉ dùng màu báo đúng/sai. Nội dung và nút điều khiển nằm ngoài Canvas, không che hình.
 - Tablet/điện thoại đến 1040 px xếp dọc; thử màn 360/390, 768/1024 và desktop 1280 px. Điện thoại đến 650 px xếp thẻ hình và chủ đề một cột. Không khóa cuộn trang ngoài vùng thao tác 3D.
 - Không tự xoay liên tục; tôn trọng reduced motion. Có nút xoay/zoom tương đương thao tác chuột.
+- Hình triển khai áp dụng cho cả hai hình: lập phương có 6 hình vuông bằng nhau; hộp chữ nhật có hai mặt `d × h`, hai mặt `r × h` và hai đáy `d × r`. Bốn mặt bên màu hồng, hai đáy màu xanh. Nút trải/ghép là trạng thái của một chủ đề; đóng chủ đề hoặc đổi hình phải trả về mô hình 3D. Trạng thái này không thay đổi số đo hay camera.
+- Nhân vật học sinh chỉ trang trí phần đầu trang, dùng SVG và CSS, không thêm thư viện. Hai nhân vật vẫy tay ngắn mỗi 5 giây, đứng yên giữa các lần vẫy và tắt hoàn toàn khi `prefers-reduced-motion: reduce`.
 
 ## Bài tập
 
