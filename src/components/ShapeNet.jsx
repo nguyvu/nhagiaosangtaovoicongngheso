@@ -1,8 +1,15 @@
+import CylinderNet from './CylinderNet';
+import { getNetLabelLayout } from '../utils/unfolding';
+import { useEffect, useRef } from 'react';
+
 const UNIT = 28;
-const MARGIN = 12;
 
 // Four side faces form a strip. Both d × r bases attach to the d × h third face.
-export default function ShapeNet({ dimensions: { d, r, h }, closing, onCloseComplete }) {
+function BoxNet({ dimensions: { d, r, h } }) {
+  const contentWidth = 2 * (d + r) * UNIT;
+  const contentHeight = (h + 2 * r) * UNIT;
+  const mobileScale = 188 / Math.max(contentWidth, contentHeight);
+  const MARGIN = 56 / mobileScale;
   const sideY = MARGIN + r * UNIT;
   const centerX = MARGIN + (d + r) * UNIT;
   const faces = [
@@ -15,21 +22,31 @@ export default function ShapeNet({ dimensions: { d, r, h }, closing, onCloseComp
   ];
   const width = 2 * (d + r) * UNIT + 2 * MARGIN;
   const height = (h + 2 * r) * UNIT + 2 * MARGIN;
-  const mobileScale = Math.min(300 / width, 300 / height);
 
-  return <div className="shape-net" aria-hidden="true" onAnimationEnd={event => {
-    if (closing && event.target === event.currentTarget) onCloseComplete();
-  }}>
-    <svg viewBox={`0 0 ${width} ${height}`} focusable="false">
+  return <svg viewBox={`0 0 ${width} ${height}`} focusable="false">
       {faces.map(face => {
-        const showNumber = Math.min(face.width, face.height) * mobileScale >= 21;
+        const label = getNetLabelLayout({ width: face.width / UNIT, height: face.height / UNIT, base: face.kind === 'base', naturalSize: Math.min(face.width, face.height) / UNIT * .38 }, UNIT * mobileScale);
         return <g key={face.number} transform={`translate(${face.x} ${face.y})`}>
           <g className={`net-face net-face-${face.kind}`} style={{ '--net-x': `${face.dx || 0}px`, '--net-y': `${face.dy || 0}px` }}>
             <rect width={face.width} height={face.height} />
-            {showNumber && <text x={face.width / 2} y={face.height / 2} fontSize={Math.min(30, Math.min(face.width, face.height) * .82)} dominantBaseline="central" textAnchor="middle">{face.number}</text>}
+            {label.external && <line x1={face.width / 2 + label.anchorX * UNIT} y1={face.height / 2 - label.anchorY * UNIT} x2={face.width / 2 + label.x * UNIT} y2={face.height / 2 - label.y * UNIT} stroke="#493342" />}
+            <text x={face.width / 2 + label.x * UNIT} y={face.height / 2 - label.y * UNIT} fontSize={label.size * UNIT * .72} dominantBaseline="central" textAnchor="middle">{face.number}</text>
           </g>
         </g>;
       })}
-    </svg>
+    </svg>;
+}
+
+export default function ShapeNet({ shape, dimensions, closing, onCloseComplete, onOpenComplete }) {
+  const container = useRef();
+  useEffect(() => {
+    if (container.current?.getClientRects().length && !closing && window.matchMedia('(prefers-reduced-motion: reduce)').matches) onOpenComplete?.();
+  }, [closing, onOpenComplete]);
+  return <div ref={container} className="shape-net" aria-hidden="true" onAnimationEnd={event => {
+    if (event.target !== event.currentTarget || !event.currentTarget.getClientRects().length) return;
+    if (closing) onCloseComplete();
+    else onOpenComplete?.();
+  }}>
+    {shape === 'cylinder' ? <CylinderNet dimensions={dimensions} /> : <BoxNet dimensions={dimensions} />}
   </div>;
 }

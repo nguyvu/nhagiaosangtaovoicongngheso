@@ -2,7 +2,7 @@
 
 ## Nguyên tắc sản phẩm
 
-Phục vụ học sinh lớp 5, mỗi lần tập trung một nội dung. Chỉ dạy lập phương và hộp chữ nhật. Hướng dẫn tiếng Việt ngắn, gọi trực tiếp “em”. Không thêm đăng nhập, bảng xếp hạng, quản trị, backend hoặc chatbot trong phiên bản đầu.
+Phục vụ học sinh, mỗi lần tập trung một nội dung. Dạy lập phương, hộp chữ nhật và hình trụ (nội dung mở rộng của bản mẫu lớp 5). Hướng dẫn tiếng Việt ngắn, gọi trực tiếp “em”. Không thêm đăng nhập, bảng xếp hạng, quản trị, backend hoặc chatbot trong phiên bản đầu.
 
 ## Quy trình
 
@@ -27,9 +27,12 @@ Phục vụ học sinh lớp 5, mỗi lần tập trung một nội dung. Chỉ 
 - `d` theo trục X, `h` theo Y, `r` theo Z; hai đáy là +Y và −Y. Xoay camera không thay đổi định nghĩa đáy.
 - BoxGeometry có thứ tự vật liệu: +X, −X, +Y, −Y, +Z, −Z. Diện tích xung quanh bỏ index 2 và 3.
 - Lập phương chỉ lưu `a`, suy ra `d = r = h = a`; không cho phép ba cạnh khác nhau.
+- Hình trụ lưu `radius` (bán kính, ký hiệu r trên UI) và `h` (chiều cao). `r` trong dữ liệu hộp chữ nhật vẫn là chiều rộng; không dùng lẫn hai cấu trúc.
+- Hình trụ không có đỉnh/cạnh thẳng, có hai đường tròn đáy và một mặt xung quanh cong. Hai đáy nằm theo trục Y. Chỉ hiển thị đặc điểm, kích thước, trải mặt và bài tập nhận biết; không hiển thị diện tích hoặc thể tích hình trụ.
 - Mọi kích thước nguyên 1–10 cm. Khi hỗ trợ thập phân sau này phải sửa đồng thời UI, giới hạn, minh họa và kiểm thử.
 - Sxq/Stp dùng cm², V dùng cm³. Phóng to camera không sửa số đo.
 - Khối đơn vị chỉ tạo khi kích thước nguyên và thể tích ≤216; dùng instancing, không tạo hàng nghìn mesh riêng.
+- Chỉ hai hình hộp dùng khối đơn vị. Hình trụ không hiển thị lớp thể tích.
 
 ## Giao diện và khả năng tiếp cận
 
@@ -40,8 +43,10 @@ Phục vụ học sinh lớp 5, mỗi lần tập trung một nội dung. Chỉ 
 - Không chỉ dùng màu báo đúng/sai. Nội dung và nút điều khiển nằm ngoài Canvas, không che hình.
 - Tablet/điện thoại đến 1040 px xếp dọc; thử màn 360/390, 768/1024 và desktop 1280 px. Điện thoại đến 650 px xếp thẻ hình và chủ đề một cột. Không khóa cuộn trang ngoài vùng thao tác 3D.
 - Không tự xoay liên tục; tôn trọng reduced motion. Có nút xoay/zoom tương đương thao tác chuột.
-- Hình triển khai áp dụng cho cả hai hình: lập phương có 6 hình vuông bằng nhau; hộp chữ nhật có hai mặt `d × h`, hai mặt `r × h` và hai đáy `d × r`. Bốn mặt bên màu hồng, hai đáy màu xanh. Nút trải/ghép là trạng thái của một chủ đề; đóng chủ đề hoặc đổi hình phải trả về mô hình 3D. Trạng thái này không thay đổi số đo hay camera.
-- Khi ghép mặt, giữ hình triển khai đến hết hoạt ảnh rồi hiện mô hình 3D; nếu thiết bị yêu cầu giảm chuyển động thì ghép ngay. Khoảng cách camera theo `scene/cameraFit.js` phải giúp cạnh 3, 4 rồi 10 cm lớn dần trên màn hình, đồng thời khối 10 cm còn lề trong khung.
+- Hình triển khai: lập phương có 6 hình vuông bằng nhau; hộp chữ nhật có hai mặt `d × h`, hai mặt `r × h` và hai đáy `d × r`; hình trụ có một hình chữ nhật `2πr × h` và hai hình tròn bán kính r. Mặt xung quanh màu hồng, hai đáy màu xanh. Nút trải/ghép là trạng thái của một chủ đề; đóng chủ đề hoặc đổi hình phải hủy chuyển động và trả về khối. Số đo không thay đổi.
+- Trải/ghép phải chuyển động bằng mặt WebGL: hộp giữ các cạnh bản lề trùng nhau ở mọi góc, trụ giảm độ cong nhưng giữ độ dài cung. SVG chỉ dùng dự phòng khi thiếu WebGL. Camera tự căn trong chuyển động rồi khôi phục góc/zoom cũ khi đóng. Tôn trọng reduced motion ngay cả khi tùy chọn thay đổi giữa chuyển động.
+- Dùng refs để cập nhật ma trận/vertex/camera trong frame, không setState React mỗi frame. Chỉ thông báo hoàn tất một lần; dừng yêu cầu render khi đã đứng yên. `utils/unfolding.js` chứa phép biến đổi và có kiểm thử cạnh nối, vị trí khép kín, mặt phẳng không chồng nhau, chiều dài mặt trụ.
+- Khoảng cách camera theo `scene/cameraFit.js` phải giúp cạnh 3, 4 rồi 10 cm lớn dần trên màn hình, đồng thời khối 10 cm còn lề trong khung.
 - Nhân vật học sinh chỉ trang trí phần đầu trang, dùng SVG và CSS, không thêm thư viện. Hai nhân vật vẫy tay ngắn mỗi 5 giây, đứng yên giữa các lần vẫy và tắt hoàn toàn khi `prefers-reduced-motion: reduce`.
 
 ## Bài tập
@@ -51,3 +56,6 @@ Mỗi bài có ID ổn định, câu hỏi, đáp án số, đơn vị và lời
 ## Bàn giao
 
 Nêu thay đổi, lệnh kiểm tra đã chạy, kết quả và hạn chế thật. Không tự push hoặc triển khai. Giáo viên phải rà soát nội dung trước khi dùng trên lớp.
+
+- Cả ba hình dùng một nút chủ đề đổi nhãn từ “Trải hình thành 6 mặt…” hoặc “Trải mặt hình trụ” sang “Ghép thành khối”; ghép xong đóng nội dung. Không có nút thao tác lặp lại bên dưới.
+- Không ẩn số mặt hẹp; dùng số ngoài mặt có đường nối. Thẻ hình trụ hồng, lập phương vàng và hộp chữ nhật xanh.

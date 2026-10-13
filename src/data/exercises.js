@@ -11,4 +11,10 @@ export const exercises = {
     { id: 'cuboid-total', question: 'Hình hộp chữ nhật dài 5 cm, rộng 3 cm, cao 2 cm. Tính diện tích toàn phần.', answer: 62, unit: 'cm²', solution: 'Stp = 2 × (5 × 3 + 5 × 2 + 3 × 2) = 62 cm².' },
     { id: 'cuboid-volume', question: 'Hình hộp chữ nhật dài 5 cm, rộng 3 cm, cao 2 cm. Tính thể tích.', answer: 30, unit: 'cm³', solution: 'V = 5 × 3 × 2 = 30 cm³.' },
   ],
+  cylinder: [
+    { id: 'cylinder-bases', question: 'Hình trụ có bao nhiêu mặt đáy tròn?', answer: 2, unit: 'mặt đáy', solution: 'Hình trụ có hai mặt đáy tròn bằng nhau, ở trên và dưới.' },
+    { id: 'cylinder-curved', question: 'Hình trụ có bao nhiêu mặt xung quanh cong?', answer: 1, unit: 'mặt cong', solution: 'Hình trụ có một mặt xung quanh cong nối hai đáy tròn.' },
+    { id: 'cylinder-vertices', question: 'Hình trụ có bao nhiêu đỉnh nhọn?', answer: 0, unit: 'đỉnh', solution: 'Hình trụ không có đỉnh nhọn như hình lập phương hay hình hộp chữ nhật.' },
+    { id: 'cylinder-net', question: 'Khi trải mặt xung quanh của hình trụ, em được bao nhiêu hình chữ nhật?', answer: 1, unit: 'hình chữ nhật', solution: 'Mặt xung quanh trải thành một hình chữ nhật. Hai đáy vẫn là hai hình tròn bằng nhau.' },
+  ],
 };

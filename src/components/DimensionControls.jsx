@@ -1,5 +1,5 @@
 export default function DimensionControls({ values, onChange }) {
-  const labels = { a: 'Độ dài cạnh a', d: 'Chiều dài d', r: 'Chiều rộng r', h: 'Chiều cao h' };
+  const labels = { a: 'Độ dài cạnh a', d: 'Chiều dài d', r: 'Chiều rộng r', radius: 'Bán kính r', h: 'Chiều cao h' };
   return <div className="dimension-controls"><p>Kéo thanh trượt để thay đổi kích thước thật của hình.</p>
     {Object.entries(values).map(([key, value]) => <label key={key} className="dimension-row">
       <span>{labels[key]} <strong>{value} cm</strong></span>

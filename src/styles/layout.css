@@ -90,7 +90,7 @@ main { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
 
 .shape-options {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
   gap: 20px;
   margin: 20px 0 32px;
 }
@@ -106,7 +106,7 @@ main { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
   box-shadow: var(--shadow);
 }
 
-/* All choice tiles share clear yellow/green, hover and selected states. */
+/* Choice tiles share clear hover and selected states. */
 [data-tone="yellow"], .choice-buttons button:nth-child(odd) {
   --tile-bg: var(--yellow);
   --tile-selected: var(--yellow-selected);
@@ -122,6 +122,16 @@ main { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
   --tile-selected: var(--green-selected);
   --tile-ink: var(--accent);
   --tile-border: #b0ce97;
+}
+
+[data-tone="pink"] {
+  --tile-bg: var(--pink);
+  --tile-selected: var(--pink-selected);
+  --tile-ink: var(--pink-ink);
+  --tile-border: #d68bab;
+  --shape-top: #fff0f6;
+  --shape-left: #f4b3cf;
+  --shape-right: #df85ad;
 }
 
 .shape-card, .topic-list button, .choice-buttons button {
@@ -237,9 +247,9 @@ main { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
 }
 
 .shape-net svg { width: min(100%, 420px); max-height: 100%; }
-.net-face rect { stroke: #87516b; stroke-width: 2.5; }
+.net-face rect, .net-face circle { stroke: #87516b; stroke-width: 2.5; }
 .net-face-side rect { fill: #f8d2df; }
-.net-face-base rect { fill: #b8e5dd; stroke: #2e7768; }
+.net-face-base rect, .net-face-base circle { fill: #b8e5dd; stroke: #2e7768; }
 .net-face text { fill: #493342; font-family: 'Geometry Nunito', sans-serif; font-weight: 700; }
 .net-face { animation: net-open .6s ease-out both; }
 .scene.net-closing .shape-net { animation: net-exit .6s ease-in-out both; }

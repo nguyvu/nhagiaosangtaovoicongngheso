@@ -2,6 +2,12 @@ export const DIMENSION_MIN = 1;
 export const DIMENSION_MAX = 10;
 export const MAX_UNIT_CUBES = 216;
 export const SOLID_COUNTS = Object.freeze({ vertices: 8, edges: 12, faces: 6 });
+// Use the same approximation in lessons, answers and the flat net.
+export const PI = 3.14;
+
+export function formatMeasure(value) {
+  return new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 2 }).format(value);
+}
 
 export function clampDimension(value) {
   const number = Number(value);
@@ -11,12 +17,21 @@ export function clampDimension(value) {
 }
 
 export function getDimensions(shape, dimensions) {
+  if (shape === 'cylinder') return { radius: dimensions.radius, h: dimensions.h };
   return shape === 'cube'
     ? { d: dimensions.a, r: dimensions.a, h: dimensions.a }
     : { d: dimensions.d, r: dimensions.r, h: dimensions.h };
 }
 
-export function calculateGeometry({ d, r, h }) {
+export function calculateGeometry(dimensions) {
+  const { d, r, h, radius } = dimensions;
+  if (radius !== undefined) {
+    const round = value => Math.round(value * 100) / 100;
+    const baseArea = PI * radius * radius;
+    const lateralArea = 2 * PI * radius * h;
+    return { baseArea: round(baseArea), circumference: round(2 * PI * radius),
+      lateralArea: round(lateralArea), totalArea: round(lateralArea + 2 * baseArea), volume: round(baseArea * h) };
+  }
   return {
     lateralArea: 2 * (d + r) * h,
     totalArea: 2 * (d * r + d * h + r * h),
@@ -25,7 +40,7 @@ export function calculateGeometry({ d, r, h }) {
 }
 
 export function canShowUnitCubes(dimensions) {
-  return Object.values(dimensions).every(n => Number.isInteger(n) && n >= 1)
+  return ['d', 'r', 'h'].every(key => Number.isInteger(dimensions[key]) && dimensions[key] >= 1)
     && calculateGeometry(dimensions).volume <= MAX_UNIT_CUBES;
 }
 
