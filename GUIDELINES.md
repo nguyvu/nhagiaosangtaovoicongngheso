@@ -41,6 +41,7 @@ Phục vụ học sinh lớp 5, mỗi lần tập trung một nội dung. Chỉ 
 - Tablet/điện thoại đến 1040 px xếp dọc; thử màn 360/390, 768/1024 và desktop 1280 px. Điện thoại đến 650 px xếp thẻ hình và chủ đề một cột. Không khóa cuộn trang ngoài vùng thao tác 3D.
 - Không tự xoay liên tục; tôn trọng reduced motion. Có nút xoay/zoom tương đương thao tác chuột.
 - Hình triển khai áp dụng cho cả hai hình: lập phương có 6 hình vuông bằng nhau; hộp chữ nhật có hai mặt `d × h`, hai mặt `r × h` và hai đáy `d × r`. Bốn mặt bên màu hồng, hai đáy màu xanh. Nút trải/ghép là trạng thái của một chủ đề; đóng chủ đề hoặc đổi hình phải trả về mô hình 3D. Trạng thái này không thay đổi số đo hay camera.
+- Khi ghép mặt, giữ hình triển khai đến hết hoạt ảnh rồi hiện mô hình 3D; nếu thiết bị yêu cầu giảm chuyển động thì ghép ngay. Khoảng cách camera theo `scene/cameraFit.js` phải giúp cạnh 3, 4 rồi 10 cm lớn dần trên màn hình, đồng thời khối 10 cm còn lề trong khung.
 - Nhân vật học sinh chỉ trang trí phần đầu trang, dùng SVG và CSS, không thêm thư viện. Hai nhân vật vẫy tay ngắn mỗi 5 giây, đứng yên giữa các lần vẫy và tắt hoàn toàn khi `prefers-reduced-motion: reduce`.
 
 ## Bài tập

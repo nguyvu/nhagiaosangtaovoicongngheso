@@ -7,7 +7,7 @@ function ChoiceButtons({ options, value, onChange }) {
   return <div className="choice-buttons">{options.map(([id, label]) => <button key={id} aria-pressed={value === id} className={value === id ? 'active' : ''} onClick={() => onChange(id)}>{label}</button>)}</div>;
 }
 
-export default function KnowledgePanel({ shape, topic, feature, setFeature, area, setArea, units, setUnits, netOpen, setNetOpen, geometry, exerciseState }) {
+export default function KnowledgePanel({ shape, topic, feature, setFeature, area, setArea, units, setUnits, netOpen, onNetToggle, geometry, exerciseState }) {
   const { values, dimensions: { d, r, h }, dimensions, results, setDimension } = geometry;
   const cube = shape === 'cube';
   const lateral = area === 'lateral';
@@ -28,7 +28,7 @@ export default function KnowledgePanel({ shape, topic, feature, setFeature, area
     {topic === 'net' && <div className="net-lesson">
       <h3>Trải {shapeLessons[shape].name.toLowerCase()}</h3>
       <p>{cube ? 'Hình lập phương có 6 mặt vuông bằng nhau.' : 'Hình hộp chữ nhật có 3 cặp mặt đối diện bằng nhau.'} Bấm nút để trải các mặt ra, rồi ghép lại thành khối.</p>
-      <button type="button" className="primary" aria-pressed={netOpen} onClick={() => setNetOpen(open => !open)}>{netOpen ? 'Ghép lại thành khối' : cube ? 'Trải thành 6 hình vuông' : 'Trải 6 mặt chữ nhật'}</button>
+      <button type="button" className="primary" aria-pressed={netOpen} onClick={onNetToggle}>{netOpen ? 'Ghép lại thành khối' : cube ? 'Trải thành 6 hình vuông' : 'Trải 6 mặt chữ nhật'}</button>
       {netOpen && <>
         <p className="net-legend"><span><i className="net-swatch side" /> Số 1–4: bốn mặt bên</span><span><i className="net-swatch base" /> Số 5–6: hai mặt đáy</span></p>
         {cube ? <div className="formula"><strong>Diện tích mỗi mặt vuông</strong><span>{d} × {d} =</span><b>{d * d} cm²</b></div> : <div className="formula"><strong>Diện tích từng cặp mặt</strong><span>Số 1 và 3 (dài × cao): {d} × {h} = <b>{d * h} cm²</b> mỗi mặt</span><span>Số 2 và 4 (rộng × cao): {r} × {h} = <b>{r * h} cm²</b> mỗi mặt</span><span>Số 5 và 6 (dài × rộng): {d} × {r} = <b>{d * r} cm²</b> mỗi mặt</span></div>}

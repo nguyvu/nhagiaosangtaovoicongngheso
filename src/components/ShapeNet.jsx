@@ -2,7 +2,7 @@ const UNIT = 28;
 const MARGIN = 12;
 
 // Four side faces form a strip. Both d × r bases attach to the d × h third face.
-export default function ShapeNet({ dimensions: { d, r, h } }) {
+export default function ShapeNet({ dimensions: { d, r, h }, closing, onCloseComplete }) {
   const sideY = MARGIN + r * UNIT;
   const centerX = MARGIN + (d + r) * UNIT;
   const faces = [
@@ -17,7 +17,9 @@ export default function ShapeNet({ dimensions: { d, r, h } }) {
   const height = (h + 2 * r) * UNIT + 2 * MARGIN;
   const mobileScale = Math.min(300 / width, 300 / height);
 
-  return <div className="shape-net" aria-hidden="true">
+  return <div className="shape-net" aria-hidden="true" onAnimationEnd={event => {
+    if (closing && event.target === event.currentTarget) onCloseComplete();
+  }}>
     <svg viewBox={`0 0 ${width} ${height}`} focusable="false">
       {faces.map(face => {
         const showNumber = Math.min(face.width, face.height) * mobileScale >= 21;

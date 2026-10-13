@@ -159,7 +159,33 @@ try {
       const rect = document.querySelector('canvas').getBoundingClientRect();
       return { x: rect.x + scrollX, y: rect.y + scrollY, width: rect.width, height: rect.height, scale: 1 };
     })()`);
-    return (await cdp('Page.captureScreenshot', { format: 'png', clip })).data;
+    return (await cdp('Page.captureScreenshot', { format: 'png', clip, captureBeyondViewport: true })).data;
+  }
+  async function sceneScreenshot(name) {
+    const data = await sceneImage();
+    await mkdir(screenshotDir, { recursive: true });
+    await writeFile(join(screenshotDir, name), Buffer.from(data, 'base64'));
+    return data;
+  }
+  async function scenePinkBounds(data) {
+    return evaluate(`(async () => {
+      const image = await createImageBitmap(await (await fetch('data:image/png;base64,${data}')).blob());
+      const canvas = document.createElement('canvas');
+      canvas.width = image.width; canvas.height = image.height;
+      const context = canvas.getContext('2d');
+      context.drawImage(image, 0, 0);
+      const pixels = context.getImageData(0, 0, image.width, image.height).data;
+      let left = image.width, top = image.height, right = 0, bottom = 0;
+      for (let y = 0; y < image.height; y++) for (let x = 0; x < image.width; x++) {
+        const index = (y * image.width + x) * 4;
+        const red = pixels[index], green = pixels[index + 1], blue = pixels[index + 2];
+        if (red > 145 && green < 205 && blue > 90 && blue < 220 && red - green > 35) {
+          left = Math.min(left, x); top = Math.min(top, y);
+          right = Math.max(right, x); bottom = Math.max(bottom, y);
+        }
+      }
+      return { left, top, right, bottom, width: right - left + 1, height: bottom - top + 1, imageWidth: image.width, imageHeight: image.height };
+    })()`);
   }
   await cdp('Runtime.enable');
   await cdp('Page.enable');
@@ -206,6 +232,17 @@ try {
   assert.notEqual(await sceneImage(), before, 'Rotate must change the rendered image');
   await click('Góc nhìn ban đầu');
   checks.push('Zoom, rotate and reset change/restore actual WebGL output');
+  const cube3 = await scenePinkBounds(await sceneScreenshot('cube-3cm.png'));
+  await click('Kích thước'); await range(4);
+  const cube4 = await scenePinkBounds(await sceneScreenshot('cube-4cm.png'));
+  await range(10);
+  const cube10 = await scenePinkBounds(await sceneScreenshot('cube-10cm.png'));
+  assert.ok(cube3.width < cube4.width && cube4.width < cube10.width, `Cube must visibly grow at 3, 4 and 10 cm: ${JSON.stringify({ cube3, cube4, cube10 })}`);
+  assert.ok(cube10.width >= cube4.width * 1.12, '10 cm cube must be visibly larger than 4 cm');
+  assert.ok(cube10.left > 35 && cube10.top > 35 && cube10.right < cube10.imageWidth - 35 && cube10.bottom < cube10.imageHeight - 35, `10 cm cube must stay within the scene: ${JSON.stringify(cube10)}`);
+  await checkLayout('Desktop: 10 cm cube');
+  await range(3);
+  checks.push('Cube 3, 4 and 10 cm: rendered scene snapshots retain a visible growth and frame margin');
   await click('Diện tích'); await includes('36 cm²');
   await click('Toàn phần'); await includes('54 cm²');
   await click('Thể tích'); await includes('27 cm³');
@@ -221,24 +258,33 @@ try {
   assert.equal(await evaluate(`!!document.querySelector('.shape-net')`), false, 'Opening the lesson must keep the cube assembled');
   await click('Trải thành 6 hình vuông'); await delay(700);
   assert.equal(await evaluate(`document.querySelectorAll('.shape-net .net-face').length`), 6, 'Cube net must contain six separate square faces');
-  assert.equal(await evaluate(`getComputedStyle(document.querySelector('.scene canvas')).visibility`), 'hidden', '3D cube must give way to the net');
+  assert.equal(await evaluate(`!!document.querySelector('.view-controls')`), false, 'Camera controls must stay hidden while the net covers the 3D cube');
   await includes('9 cm²'); await includes('54 cm²');
   await cdp('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
   assert.equal(await evaluate(`Array.from(document.querySelectorAll('.net-face')).every(element => getComputedStyle(element).animationName === 'none')`), true, 'Reduced motion disables the unfolding animation');
   await cdp('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }] });
+  await delay(700);
   await checkLayout('Desktop: unfolded cube');
   await evaluate(`document.querySelector('.viewer-card').scrollIntoView({ block: 'start' })`);
   await screenshot('desktop-net.png');
   await click('Ghép lại thành khối');
-  assert.equal(await evaluate(`!!document.querySelector('.shape-net')`), false, 'Fold button restores 3D cube');
+  assert.equal(await evaluate(`!!document.querySelector('.scene.net-closing .shape-net')`), true, 'Cube net must animate closed before returning to 3D');
+  assert.deepEqual(await evaluate(`[getComputedStyle(document.querySelector('.scene.net-closing .shape-net')).animationName, getComputedStyle(document.querySelector('.scene.net-closing .net-face')).animationName]`), ['net-exit', 'net-close'], 'Folding must animate the net overlay and faces');
+  await waitFor(() => evaluate(`!document.querySelector('.shape-net')`), 'Cube fold transition');
   await click('Tách 6 mặt');
   assert.equal(await evaluate(`document.querySelectorAll('[aria-expanded="true"]').length`), 0, 'Selecting the active lesson closes it');
   await click('Kích thước'); await range(5);
   await click('Tách 6 mặt'); await click('Trải thành 6 hình vuông');
   await includes('25 cm²'); await includes('150 cm²');
+  await cdp('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+  await click('Ghép lại thành khối');
+  assert.equal(await evaluate(`!!document.querySelector('.shape-net')`), false, 'Reduced motion must fold instantly');
+  await cdp('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }] });
   checks.push('Cube: unfold six equal faces, recalculate area for changed side, fold back and close topic; reduced motion disables unfolding');
   await click('Hình hộp chữ nhật');
   assert.equal(await evaluate(`document.querySelectorAll('[aria-expanded="true"]').length`), 0);
+  const cuboidInitial = await scenePinkBounds(await sceneScreenshot('cuboid-initial.png'));
+  assert.ok(cuboidInitial.width > 150 && cuboidInitial.left > 20 && cuboidInitial.right < cuboidInitial.imageWidth - 20, 'Initial cuboid must render brightly inside the frame');
   await click('Tách 6 mặt'); await click('Trải 6 mặt chữ nhật'); await delay(700);
   assert.deepEqual(await evaluate(`Array.from(document.querySelectorAll('.shape-net rect'), rect => [Number(rect.getAttribute('width')), Number(rect.getAttribute('height'))])`), [[140, 56], [84, 56], [140, 56], [84, 56], [140, 84], [140, 84]], 'Cuboid net must have two d × h, two r × h and two d × r faces');
   await includes('62 cm²'); await includes('32 cm²');
@@ -246,7 +292,7 @@ try {
   await evaluate(`document.querySelector('.viewer-card').scrollIntoView({ block: 'start' })`);
   await screenshot('desktop-cuboid-net.png');
   await click('Ghép lại thành khối');
-  assert.equal(await evaluate(`!!document.querySelector('.shape-net')`), false, 'Fold button restores 3D cuboid');
+  await waitFor(() => evaluate(`!document.querySelector('.shape-net')`), 'Cuboid fold transition');
   await click('Kích thước'); await range(6, 0); await range(4, 1); await range(3, 2);
   await click('Tách 6 mặt'); await click('Trải 6 mặt chữ nhật');
   await includes('18 cm²'); await includes('12 cm²'); await includes('24 cm²'); await includes('108 cm²'); await includes('60 cm²');

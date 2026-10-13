@@ -217,13 +217,12 @@ main { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
   height: 400px;
   position: relative;
   margin: 20px 16px 0;
-  background: var(--surface-soft);
+  background: #fff9fc radial-gradient(circle, #ead5df 1px, transparent 1.4px) 0 0 / 44px 44px;
   border-radius: 20px;
   touch-action: none;
 }
 
 .scene canvas { display: block; border-radius: 20px; }
-.scene.net-open canvas { visibility: hidden; }
 
 .shape-net {
   position: absolute;
@@ -231,7 +230,10 @@ main { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
   display: grid;
   place-items: center;
   padding: 14px;
-  pointer-events: none;
+  z-index: 1;
+  background: inherit;
+  border-radius: inherit;
+  animation: net-enter .6s ease-out both;
 }
 
 .shape-net svg { width: min(100%, 420px); max-height: 100%; }
@@ -240,17 +242,33 @@ main { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
 .net-face-base rect { fill: #b8e5dd; stroke: #2e7768; }
 .net-face text { fill: #493342; font-family: 'Geometry Nunito', sans-serif; font-weight: 700; }
 .net-face { animation: net-open .6s ease-out both; }
+.scene.net-closing .shape-net { animation: net-exit .6s ease-in-out both; }
+.scene.net-closing .net-face { animation: net-close .6s ease-in-out both; }
+
+@keyframes net-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes net-exit {
+  0%, 25% { opacity: 1; }
+  100% { opacity: 0; }
+}
 
 @keyframes net-open {
   from { transform: translate(var(--net-x, 0), var(--net-y, 0)); opacity: .45; }
   to { transform: translate(0, 0); opacity: 1; }
 }
 
+@keyframes net-close {
+  from { transform: translate(0, 0); opacity: 1; }
+  to { transform: translate(var(--net-x, 0), var(--net-y, 0)); opacity: .45; }
+}
+
 .scene-tag {
   position: absolute;
-  bottom: 16px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 16px;
+  right: 16px;
   pointer-events: none;
   background: var(--surface);
   border: 1px solid var(--border);

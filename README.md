@@ -30,7 +30,7 @@ Không cần file môi trường, tài khoản, backend hoặc cơ sở dữ li�
 - Chọn một trong hai hình; đổi hình sẽ đặt lại kích thước, góc nhìn, nội dung và bài tập.
 - Xoay bằng kéo chuột/cảm ứng; zoom bằng cuộn/chụm; có nút xoay trái/phải, zoom và đặt lại để dùng bàn phím.
 - Mở/đóng từng nội dung: đỉnh/cạnh/mặt, kích thước, diện tích, thể tích, bài tập.
-- Với cả hai hình, mở “Tách 6 mặt” rồi bấm nút trải mặt để xem hình triển khai; bấm “Ghép lại thành khối” để quay về mô hình 3D. Lập phương có 6 hình vuông diện tích `a × a`; hộp chữ nhật có hai mặt `d × h`, hai mặt `r × h` và hai đáy `d × r`.
+- Với cả hai hình, mở “Tách 6 mặt” rồi bấm nút trải mặt để xem hình triển khai; bấm “Ghép lại thành khối” để các mặt chuyển động về giữa và hiện lại mô hình 3D. Lập phương có 6 hình vuông diện tích `a × a`; hộp chữ nhật có hai mặt `d × h`, hai mặt `r × h` và hai đáy `d × r`.
 - Kích thước nguyên 1–10 cm, nhãn kích thước chỉ hiện ở mục tương ứng.
 - Làm nổi bật nhóm đỉnh/cạnh/mặt; phân biệt 4 mặt bên và 2 mặt đáy theo trục đứng Y.
 - Công thức, thay số và đơn vị cm²/cm³ cập nhật theo kích thước.
@@ -42,9 +42,11 @@ Không cần file môi trường, tài khoản, backend hoặc cơ sở dữ li�
 
 Nhánh `feature/HHCN_HLPver1.1` dùng nền hồng pastel nhạt, màu nhấn xanh lá và các ô lựa chọn vàng–xanh. Ô được chọn có nền đậm hơn, viền rõ và dấu chọn hoặc biểu tượng đóng. Khối nội dung trắng, góc bo mềm và khoảng cách thoáng. Nội dung học tập và nhãn nút tối thiểu 18 px, dòng chữ giãn 1,65; nhãn phụ dùng 16 px. Nút cao tối thiểu 52 px; nút xoay/zoom luôn hiện chữ trên cả điện thoại. Biểu tượng SVG có sẵn trong mã nguồn, không thêm thư viện.
 
-Hai nhân vật học sinh SVG ở đầu trang vẫy tay ngắn mỗi 5 giây và nhún nhẹ khi mở trang. Hình minh họa thu gọn trên điện thoại, không nhận focus hoặc được đọc như nội dung học. Khi thiết bị bật giảm chuyển động (`prefers-reduced-motion`), toàn bộ hoạt ảnh này được tắt.
+Hai nhân vật học sinh SVG ở đầu trang vẫy tay ngắn mỗi 5 giây và nhún nhẹ khi mở trang. Hình minh họa thu gọn trên điện thoại, không nhận focus hoặc được đọc như nội dung học. Khi thiết bị bật giảm chuyển động (`prefers-reduced-motion`), hoạt ảnh nhân vật và trải/ghép mặt đều được tắt.
 
 Tablet và điện thoại (chiều rộng đến 1040 px) xếp mô hình và nội dung học theo chiều dọc. Điện thoại đến 650 px dùng thẻ chọn hình và danh sách chủ đề một cột. Nền mô hình và phần mở đầu được giảm chi tiết trang trí; các màu đánh dấu đỉnh, cạnh và mặt 3D vẫn giữ ý nghĩa học tập. Font Nunito bo tròn có đầy đủ ký tự tiếng Việt được đóng gói trong dự án, không phụ thuộc font cài trên máy và không gọi Google Fonts khi chạy. Xem [font và giấy phép](docs/FONTS.md).
+
+Hai khối 3D ban đầu có các mặt hồng sáng trên nền hồng gần trắng. Camera tăng khoảng cách theo kích thước để lập phương tiếp tục lớn dần từ 4 đến 10 cm mà vẫn nằm trong khung; nhãn “Kéo để xoay hình” ở góc trên phải để không che đáy khối. Màu đánh dấu trong các bài học vẫn giữ ý nghĩa riêng.
 
 Workflow hiện chỉ triển khai nhánh `feature/HHCN_HLP`; bản giao diện 1.1 cần được đưa vào nhánh đó để xuất hiện trên website công khai.
 
@@ -56,7 +58,7 @@ Workflow hiện chỉ triển khai nhánh `feature/HHCN_HLP`; bản giao diện 
 4. Mở “Diện tích” hoặc “Thể tích” để xem kết quả theo hình vừa chỉnh.
 5. Mở “Bài tập”. Sử dụng số liệu trong đề, không lấy kích thước của mô hình hiện tại. “Kiểm tra đáp án” chỉ báo đúng/sai; bấm “Xem đáp án” mới hiển thị đáp án và lời giải.
 
-Bấm mục đang mở để đóng. Nút “Góc nhìn ban đầu” chỉ đặt lại camera. Chọn hình khác sẽ bắt đầu lượt khám phá mới. Camera tự căn khoảng cách khi kích thước lớn nhất thay đổi để hình vừa khung; zoom không sửa số đo.
+Bấm mục đang mở để đóng. Nút “Góc nhìn ban đầu” chỉ đặt lại camera. Chọn hình khác sẽ bắt đầu lượt khám phá mới. Camera tự căn khoảng cách khi kích thước lớn nhất thay đổi để hình vừa khung và vẫn thấy mức tăng kích thước; zoom không sửa số đo.
 
 ## Công nghệ và lựa chọn
 
@@ -73,6 +75,7 @@ src/
   components/              Thẻ chọn hình, điều khiển và panel học tập
   scene/
     GeometryScene.jsx      Canvas, ánh sáng, camera và OrbitControls
+    cameraFit.js            Khoảng cách camera theo kích thước khối và tỉ lệ khung
     BoxModel.jsx           Dựng mặt/cạnh/đỉnh và nhãn chung
     CubeModel.jsx          Mô hình lập phương
     CuboidModel.jsx        Mô hình hộp chữ nhật
