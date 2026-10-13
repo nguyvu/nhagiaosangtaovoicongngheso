@@ -1,7 +1,6 @@
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useState, useCallback } from 'react';
 import ShapeIcon from './components/ShapeIcon';
 import StudentFriends from './components/StudentFriends';
-import ShapeNet from './components/ShapeNet';
 import UiIcon from './components/UiIcon';
 import ShapeSelector from './components/ShapeSelector';
 import ExploreControls from './components/ExploreControls';
@@ -23,41 +22,57 @@ function Exploration({ shape }) {
   const [units, setUnits] = useState(false);
   const [netOpen, setNetOpen] = useState(false);
   const [netClosing, setNetClosing] = useState(false);
+  const [netReady, setNetReady] = useState(false);
   const [command, setCommand] = useState(null);
   const mode = topic === 'features' ? feature : topic === 'area' ? area : null;
   const netVisible = topic === 'net' && netOpen;
-  function toggleNet() {
-    if (netClosing) return;
-    if (!netOpen) setNetOpen(true);
-    else if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) setNetOpen(false);
-    else setNetClosing(true);
-  }
-  function finishNetClose() {
-    setNetOpen(false);
-    setNetClosing(false);
-  }
+  const cylinder = shape === 'cylinder';
+  const netDescription = cylinder
+    ? 'Hình triển khai hình trụ: một hình chữ nhật màu hồng là mặt xung quanh, hai hình tròn màu xanh là hai đáy.'
+    : `Hình triển khai ${shapeLessons[shape].name.toLowerCase()}: bốn mặt bên màu hồng, hai mặt đáy màu xanh. ${shape === 'cube' ? 'Sáu mặt vuông bằng nhau.' : 'Hai mặt dài nhân cao, hai mặt rộng nhân cao và hai đáy dài nhân rộng.'}`;
+  const netHint = cylinder ? 'Một hình chữ nhật và hai hình tròn tạo nên bề mặt hình trụ.'
+    : shape === 'cube' ? 'Sáu hình vuông bằng nhau tạo nên sáu mặt của hình lập phương.' : 'Ba cặp hình chữ nhật tạo nên sáu mặt của hình hộp chữ nhật.';
+  const finishNetMotion = useCallback(expanded => {
+    if (expanded) setNetReady(true);
+    else {
+      setNetOpen(false); setNetClosing(false); setNetReady(false);
+      setTopic(previous => previous === 'net' ? null : previous);
+    }
+  }, []);
   function selectTopic(next) {
+    if (next === 'net') {
+      if (netClosing) return;
+      if (topic === 'net' && netOpen) {
+        setNetReady(false);
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) finishNetMotion(false);
+        else setNetClosing(true);
+      } else {
+        setTopic('net'); setNetOpen(true); setNetClosing(false); setNetReady(false);
+      }
+      return;
+    }
     setTopic(previous => previous === next ? null : next);
     setNetOpen(false);
     setNetClosing(false);
+    setNetReady(false);
   }
   return <section className="exploration" aria-label={`Khám phá ${shapeLessons[shape].name.toLowerCase()}`}>
     <div className="viewer-card">
       <div className="viewer-heading"><div><span className="eyebrow">PHÒNG KHÁM PHÁ 3D</span><h2>{shapeLessons[shape].name}</h2></div><span className="live-badge"><i /> Tương tác trực tiếp</span></div>
-      <div className={`scene ${netVisible ? 'net-open' : ''} ${netClosing ? 'net-closing' : ''}`} role="img" aria-label={netVisible ? `Hình triển khai ${shapeLessons[shape].name.toLowerCase()}: bốn mặt bên màu hồng, hai mặt đáy màu xanh. ${shape === 'cube' ? 'Sáu mặt vuông bằng nhau.' : 'Hai mặt dài nhân cao, hai mặt rộng nhân cao và hai đáy dài nhân rộng.'}` : `Mô hình ${shapeLessons[shape].name.toLowerCase()}. Dùng chuột hoặc nút bên dưới để xoay và phóng to.`}>
+      <div className={`scene ${netVisible ? 'net-open' : ''} ${netClosing ? 'net-closing' : ''}`} data-net-state={netVisible ? netClosing ? 'closing' : netReady ? 'open' : 'opening' : 'closed'} role="img" aria-busy={netVisible && !netReady} aria-label={netVisible ? netDescription : `Mô hình ${shapeLessons[shape].name.toLowerCase()}. Dùng chuột hoặc nút bên dưới để xoay và phóng to.`}>
         <Suspense fallback={<p className="scene-fallback">Đang chuẩn bị mô hình 3D…</p>}>
-          <GeometryScene shape={shape} dimensions={geometry.dimensions} mode={mode} showDimensions={topic === 'dimensions'} showUnits={topic === 'volume' && units && canShowUnitCubes(geometry.dimensions)} command={command} />
+          <GeometryScene shape={shape} dimensions={geometry.dimensions} mode={mode} showDimensions={topic === 'dimensions'} showUnits={topic === 'volume' && units && canShowUnitCubes(geometry.dimensions)} netActive={netVisible} netExpanded={!netClosing} onNetComplete={finishNetMotion} command={command} />
         </Suspense>
-        {netVisible ? <ShapeNet dimensions={geometry.dimensions} closing={netClosing} onCloseComplete={finishNetClose} /> : <span className="scene-tag">{topic === 'volume' && units && canShowUnitCubes(geometry.dimensions) ? 'Mỗi khối nhỏ: 1 cm³' : 'Kéo để xoay hình'}</span>}
+        {!netVisible && <span className="scene-tag">{topic === 'volume' && units && canShowUnitCubes(geometry.dimensions) ? 'Mỗi khối nhỏ: 1 cm³' : 'Kéo để xoay hình'}</span>}
       </div>
       {!netVisible && <ViewControls onAction={action => setCommand(previous => ({ action, id: (previous?.id ?? 0) + 1 }))} />}
-      <p className="viewer-hint">{netVisible ? shape === 'cube' ? 'Sáu hình vuông bằng nhau tạo nên sáu mặt của hình lập phương.' : 'Ba cặp hình chữ nhật tạo nên sáu mặt của hình hộp chữ nhật.' : <>Kéo chuột để xoay · Cuộn hoặc chụm hai ngón để zoom<br /><span>Zoom chỉ đổi góc nhìn, không đổi kích thước hình.</span></>}</p>
+      <p className="viewer-hint" aria-live="polite">{netVisible ? netClosing ? 'Các mặt đang ghép lại thành khối…' : netReady ? netHint : cylinder ? 'Hai đáy mở ra, mặt cong đang trải thành hình chữ nhật…' : 'Các mặt đang mở theo cạnh nối để trải phẳng…' : <>Kéo chuột để xoay · Cuộn hoặc chụm hai ngón để zoom<br /><span>Zoom chỉ đổi góc nhìn, không đổi kích thước hình.</span></>}</p>
     </div>
     <aside className="explore-card">
       <div className="section-heading"><span className="step">02</span><h2>Cùng tìm hiểu nhé!</h2></div>
       <p className="panel-intro">Em muốn khám phá điều gì?</p>
-      <ExploreControls topic={topic} onSelect={selectTopic} />
-      <KnowledgePanel {...{ shape, topic, feature, setFeature, area, setArea, units, setUnits, netOpen, geometry, exerciseState }} onNetToggle={toggleNet} />
+      <ExploreControls shape={shape} topic={topic} netOpen={netOpen} netClosing={netClosing} onSelect={selectTopic} />
+      <KnowledgePanel {...{ shape, topic, feature, setFeature, area, setArea, units, setUnits, netOpen, geometry, exerciseState }} />
     </aside>
   </section>;
 }
