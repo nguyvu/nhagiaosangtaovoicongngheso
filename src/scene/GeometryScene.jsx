@@ -5,6 +5,7 @@ import { Spherical, Vector3 } from 'three';
 import CubeModel from './CubeModel';
 import CuboidModel from './CuboidModel';
 import UnitCubeVisualization from './UnitCubeVisualization';
+import { fitDistanceForExtent } from './cameraFit';
 
 const INITIAL_POSITION = [8, 6, 9];
 
@@ -13,7 +14,7 @@ function CameraControls({ command, dimensions }) {
   const lastCommand = useRef(null);
   const { camera, invalidate, size } = useThree();
   const extent = Math.max(dimensions.d, dimensions.r, dimensions.h);
-  const fitDistance = Math.max(12, extent * 3.3 * Math.max(1, size.height / size.width));
+  const fitDistance = fitDistanceForExtent(extent, size.width / size.height);
   useEffect(() => {
     camera.position.normalize().multiplyScalar(fitDistance);
     controls.current?.update();

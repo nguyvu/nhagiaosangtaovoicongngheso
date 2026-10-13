@@ -34,6 +34,8 @@
 
 `BoxModel` dùng chung cấu trúc hai hình, wrappers thể hiện vai trò của Cube/Cuboid. UnitCubeVisualization dùng một instanced mesh. Canvas render theo nhu cầu (`frameloop="demand"`), scene được lazy load để tách phần 3D khỏi giao diện ban đầu.
 
+Mặt mặc định dùng màu hồng sáng ổn định trên nền gần trắng. Khoảng cách camera phụ thuộc kích thước lớn nhất và tỉ lệ khung, nhưng không thay đổi số đo toán học; lập phương 4–10 cm tiếp tục lớn dần trong khung. Hình triển khai trải và ghép bằng hoạt ảnh; khi giảm chuyển động, trạng thái đổi ngay.
+
 ## Các bước tiếp theo
 
 1. Giáo viên duyệt lời giải, thuật ngữ và cách xác định hai đáy.

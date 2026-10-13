@@ -8,19 +8,20 @@ Nhánh `feature/HHCN_HLPver1.1` được kiểm tra bằng `npm run check` và `
 
 | Kiểm tra | Kết quả |
 | --- | --- |
-| Lint, kiểm thử logic, build | Đạt; 9/9 kiểm thử logic, còn cảnh báo chunk 3D lớn hơn 500 kB |
+| Lint, kiểm thử logic, build | Đạt; 10/10 kiểm thử logic, còn cảnh báo chunk 3D lớn hơn 500 kB |
 | Desktop 1280 px; tablet 768/1024 px; mobile giả lập 360/390 px | Mở toàn bộ chủ đề, công thức dài và lời giải; không tràn ngang trang hoặc bị cắt trong khối nội dung |
 | Chữ và nút | Nội dung học tập/nhãn nút tối thiểu 18 px; vùng bấm ít nhất 44 px; nút xoay/zoom luôn có nhãn chữ |
 | Bàn phím | Tab chuyển focus có viền rõ; Enter/Space mở và đóng chủ đề; ArrowRight thay đổi thanh trượt |
 | Nhãn kích thước | Ba nhãn hộp chữ nhật nằm trọn khung ở 360 px tại góc mặc định; đã chụp thêm góc xoay và phóng to |
-| Trải mặt hai hình | Lập phương có sáu mặt vuông; hộp chữ nhật có hai mặt `d × h`, hai mặt `r × h`, hai đáy `d × r`; diện tích cập nhật khi đổi số đo. Đã kiểm tra hộp 1×10×10 cm trên màn 360 px. Ghép lại, đóng chủ đề và đổi hình trả về mô hình; Chrome giả lập reduced motion tắt hiệu ứng trải mặt |
+| Trải mặt hai hình | Lập phương có sáu mặt vuông; hộp chữ nhật có hai mặt `d × h`, hai mặt `r × h`, hai đáy `d × r`; diện tích cập nhật khi đổi số đo. Đã kiểm tra hộp 1×10×10 cm trên màn 360 px. Ghép lại có hoạt ảnh ngược, đóng chủ đề và đổi hình trả về mô hình; Chrome giả lập reduced motion tắt hiệu ứng trải và ghép mặt |
+| Khung 3D | Hình ban đầu của hai khối hồng sáng trên nền hồng gần trắng; camera tự lùi khi tăng cạnh. Ảnh WebGL tại cạnh lập phương 3, 4 và 10 cm được so kích thước thực; khối 10 cm còn lề quanh khung |
 | Chức năng hiện có | Công thức, camera, đổi hình/reset, giới hạn khối đơn vị và luồng bài tập đều đạt |
 | Nhân vật học sinh | Hai nhân vật SVG xuất hiện trên desktop và điện thoại; vẫy tay ngắn mỗi 5 giây và đứng yên giữa các lần vẫy; Chrome giả lập reduced motion xác nhận tắt toàn bộ hoạt ảnh nhân vật |
 | Lỗi JavaScript | Không ghi nhận trong kịch bản kiểm tra |
 
 Các cặp màu chính đã tính tương phản: chữ `#333333`/nền hồng `#FFF8FB` là 12,08:1; chữ trắng/nút xanh `#176B47` là 6,50:1; biểu tượng `#76520c`/nền vàng được chọn `#ffe58c` là 5,65:1; biểu tượng `#176B47`/nền xanh được chọn `#c8eba9` là 4,93:1. Đây là kiểm tra các cặp màu thiết kế, không thay thế rà soát toàn bộ khả năng tiếp cận bằng thiết bị thật.
 
-Ảnh bản 1.1: [Desktop](screenshots/desktop.png), [Trải lập phương](screenshots/desktop-net.png), [Trải hộp chữ nhật](screenshots/desktop-cuboid-net.png), [Công thức desktop](screenshots/desktop-panel.png), [Tablet](screenshots/tablet.png), [Mobile](screenshots/mobile.png), [Trải lập phương mobile](screenshots/mobile-net.png), [Trải hộp chữ nhật mobile](screenshots/mobile-cuboid-net.png), [Công thức mobile](screenshots/mobile-panel.png), [Bài tập mobile](screenshots/mobile-exercise.png), [Nhãn kích thước 360 px](screenshots/mobile-dimensions.png), [Sau xoay](screenshots/mobile-dimensions-rotated.png), [Sau xoay và phóng to](screenshots/mobile-dimensions-zoomed.png).
+Ảnh bản 1.1: [Desktop](screenshots/desktop.png), [Lập phương 3 cm](screenshots/cube-3cm.png), [4 cm](screenshots/cube-4cm.png), [10 cm](screenshots/cube-10cm.png), [Hộp chữ nhật ban đầu](screenshots/cuboid-initial.png), [Trải lập phương](screenshots/desktop-net.png), [Trải hộp chữ nhật](screenshots/desktop-cuboid-net.png), [Công thức desktop](screenshots/desktop-panel.png), [Tablet](screenshots/tablet.png), [Mobile](screenshots/mobile.png), [Trải lập phương mobile](screenshots/mobile-net.png), [Trải hộp chữ nhật mobile](screenshots/mobile-cuboid-net.png), [Công thức mobile](screenshots/mobile-panel.png), [Bài tập mobile](screenshots/mobile-exercise.png), [Nhãn kích thước 360 px](screenshots/mobile-dimensions.png), [Sau xoay](screenshots/mobile-dimensions-rotated.png), [Sau xoay và phóng to](screenshots/mobile-dimensions-zoomed.png).
 
 ## Kết quả bản mẫu 0.1 — 10/10/2026
 
